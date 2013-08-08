@@ -4,17 +4,13 @@
     "use strict";
 
     require.config({
-        baseUrl: "/src",
-        shim: {
-            "sinon": { exports: "sinon" },
-        },
+        baseUrl: "/dist",
         paths: {
             "jquery": "../Scripts/jquery-2.0.3",
             "knockout": "../Scripts/knockout-2.3.0",
-            "sinon": "../Scripts/sinon-1.7.3.js"
         },
         deps: [
-            "ko.loadingWhen"
+            "ko.plus"
         ],
 
         waitSeconds: 0

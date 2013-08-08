@@ -4,7 +4,7 @@
 require([
     "jquery",
     "knockout",
-    "ko.command"],
+    "ko.plus"],
 
 function ($, ko) {
     "use strict";

@@ -3,7 +3,7 @@
 require([
     "jquery",
     "knockout",
-    "ko.editable"],
+    "ko.plus"],
 
 function ($, ko) {
     "use strict";
