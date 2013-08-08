@@ -338,4 +338,17 @@ function ($, ko) {
         ok(!prop2.isEditing(), "shouldn't be editing prop2");
         ok(!prop3.isEditing(), "shouldn't be editing prop3");
     });
+
+    test("editableArray uses initial value correctly", function () {
+        var initial = ko.editableArray([1, 2, 3]),
+            noInitial = ko.editableArray(),
+            nullInitial = ko.editableArray(null),
+            undefinedInitial = ko.editableArray(undefined);
+
+        deepEqual(initial(), [1, 2, 3]);
+        deepEqual(noInitial(), []);
+        deepEqual(nullInitial(), []);
+        deepEqual(undefinedInitial(), []);
+
+    });
 });
