@@ -206,7 +206,7 @@
     };
 
     ko.editableArray = function (initial) {
-        return toEditable(ko.observableArray(initial), function (observable) {
+        return toEditable(ko.observableArray(initial || []), function (observable) {
             return observable.slice();
         });
     };
