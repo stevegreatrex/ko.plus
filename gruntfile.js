@@ -4,7 +4,6 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
         meta: {
-            version: "0.1.0",
             banner: "/*=============================================================================\n" +
                     " *   Author:      Steve Greatrex - @stevegreatrex                               \n" +
                     " *                                                                              \n" +
@@ -52,6 +51,30 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.registerTask("nuget", "create nuget package", function () {
+        var done = this.async();
+        grunt.util.spawn({
+            cmd: "nuget\\nuget",
+            args: [
+                "pack",
+                "nuget\\ko.plus.nuspec",
+
+                "-OutputDirectory",
+                "dist",
+
+                "-Version",
+                grunt.config.get("pkg").version
+            ]
+        }, function (error, result) {
+            if (error) {
+                grunt.log.error(error);
+            } else {
+                grunt.log.write(result);
+            }
+            done();
+        });
+    });
+
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-qunit");
@@ -59,6 +82,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask("test", ["jshint", "qunit"]);
 
-    grunt.registerTask("default", ["jshint", "concat", "uglify"]);
+    grunt.registerTask("default", ["jshint", "concat", "uglify", "nuget"]);
 
 };
