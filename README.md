@@ -98,6 +98,12 @@ Attach a callback that will be invoked when the command fails.
 #### always
 Attach a callback that will be invoked when the command either completes successfully or fails.
 
+### Further Reading
+
+* [Introductory Blog Post](http://blog.greatrexpectations.com/2012/06/26/command-pattern-with-jquery-deferred-knockout/)
+* [Updated Blog Post](http://blog.greatrexpectations.com/2012/07/12/command-pattern-v2-using-knockout/)
+* [Handling Context](http://blog.greatrexpectations.com/2013/07/29/handling-this-in-ko-command/)
+
 ## ko.editable & ko.editableArray
 
 ko.editable creates an extendion of `ko.observable` with some additional properties to aid in beginning, cancelling and committing changes.
@@ -137,6 +143,10 @@ Takes the editable out of edit mode and reverts to value at the point when `begi
 
 #### rollback
 Without changing edit state, reverts back through historically committed values for this editable until it reaches the original value.
+
+### Further Reading
+
+*  [Introductory Blog Post](http://blog.greatrexpectations.com/2012/09/20/editable-fields-with-cancelability-in-knockout/)
 
 ## ko.makeEditable
 
@@ -187,3 +197,31 @@ Takes the editable and all child editables out of edit mode and reverts to value
 
 #### rollback
 Without changing edit state, reverts back through historically committed values for this editable until it reaches the original value for all child editables.
+
+### Further Reading
+
+*  [Introductory Blog Post](http://blog.greatrexpectations.com/2013/05/29/editable-object-graphs-in-knockout/)
+
+## ko.bindingHandlers.loadingWhen
+
+The `loadingWhen` custom binding handler replaces the contents of a container element with a loading placeholder when the bound value is truthy.
+
+### Example Implementation
+
+    <div data-bind="loadingWhen: someAction.isRunning">
+		<p>This will content will be replaced when someAction.isRunning</p>
+	</div>
+
+### Options
+
+#### loaderClass
+The loading element is automatically assigned the `.loader` class (defined in `ko.plus.css`).  
+The `loaderClass` property specifies what additional class will be assigned to the loading element that sets the loading spinner.
+
+The default option is `loader-dark` (grey spinner on a transparent background), and the default `ko.plus.css` stylesheet contains a `loader-white` option (white spinner on a transparent background).
+
+Non-default loader classes can also be assigned.
+
+### Further Reading
+
+*  [Introductory Blog post](http://blog.greatrexpectations.com/2012/06/17/loading-placeholders-using-knockout-js/)
