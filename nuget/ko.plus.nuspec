@@ -18,5 +18,6 @@
 	<files>
     <file src="..\dist\ko.plus.js" target="content\scripts" />
     <file src="..\dist\ko.plus.min.js" target="content\scripts" />
+		<file src="..\dist\ko.plus.css" target="content\content" />
 	</files>
 </package>

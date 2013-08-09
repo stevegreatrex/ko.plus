@@ -25,6 +25,13 @@ module.exports = function (grunt) {
                     "src/ko.plus.end.frag",
                 ],
                 dest: "dist/<%= pkg.name %>.js"
+            },
+            css: {
+            	src: [
+                    "<%= meta.banner %>",
+                    "css/*.css",
+            	],
+            	dest: "dist/<%= pkg.name %>.css"
             }
         },
         uglify: {
