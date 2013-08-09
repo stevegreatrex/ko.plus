@@ -41,7 +41,6 @@ function ($, ko) {
         ok(result.done, "The result should be a completed promise");
         ok(result.fail, "The result should be a completed promise");
         ok(result.always, "The result should be a completed promise");
-        equal(result.state(), "resolved", "The result should be a completed promise");
 
         //check that we are no longer running
         equal(command.isRunning(), false, "The command should not be running");
@@ -90,13 +89,15 @@ function ($, ko) {
 
     test("execute is passed correct this and arguments", function () {
         var arg1 = "one", arg2 = "two";
+        var outsideContext = this;
         var command = ko.command({
             action: function (a1, a2) {
-                equal(this, command, "this was not set to the command");
+                equal(this, outsideContext, "this should be set to the context in which the command is invoked");
                 equal(a1, arg1, "arguments were not passed in");
                 equal(a2, arg2, "arguments were not passed in");
                 return $.Deferred();
-            }
+            },
+            context: this
         });
 
         command(arg1, arg2);
@@ -377,20 +378,6 @@ function ($, ko) {
         ok(command.canExecute(), "canExecute should return true once the command completes");
     });
 
-    test("canExecute returns true whilst action is running if abort is enabled", function () {
-        var deferred = $.Deferred(),
-            command = ko.command({
-                concurrentExecution: "abortPendingRequest",
-                action: function () { return deferred; }
-            });
-
-        //execute the command
-        command();
-
-        //check that canExecute is false
-        ok(command.canExecute(), "canExecute should return true when the command is running");
-    });
-
     test("canExecute returns true after action fails", function () {
         var deferred = $.Deferred(),
             command = ko.command(function () { return deferred; });
@@ -408,11 +395,11 @@ function ($, ko) {
         ok(command.canExecute(), "canExecute should return true once the command fails");
     });
 
+
     test("canExecute returns false if options-specified item returns false", function () {
-        var deferred = $.Deferred(),
-            actionCanExecute = true,
+        var actionCanExecute = true,
             command = ko.command({
-                action: function () { return deferred; },
+                action: function () { return null; },
                 canExecute: function () { return actionCanExecute; }
             });
 
@@ -442,16 +429,18 @@ function ($, ko) {
 
     test("canExecute is called in the context of the command", function () {
         var canExecuteContext,
+            outsideContext = this,
             command = ko.command({
                 action: function () { },
                 canExecute: function () {
                     canExecuteContext = this;
-                }
+                },
+                context: this
             });
 
         command.canExecute();
 
-        equal(canExecuteContext, command, "canExecute should be called in the context of the command");
+        equal(canExecuteContext, outsideContext, "canExecute should be called in the context in which the command was executed");
     });
 
     test("execute returns a completed deferred object when canExecute is false", function () {
@@ -473,43 +462,6 @@ function ($, ko) {
         ok(failCalled, "The fail handler should have been called");
         ok(!command.isRunning(), "The command should not be running");
         ok(!actionCalled, "The action should not have been invoked");
-    });
-
-    var createDeferredWithAbort = function () {
-        var deferred = $.Deferred();
-        deferred.abort = function () {
-            deferred.aborted = true;
-        };
-        return deferred;
-    };
-
-    test("execute aborts the pending request if abortPendingRequest is set", function () {
-        var calls = [createDeferredWithAbort(), createDeferredWithAbort()],
-            callCount = 0,
-            command = ko.command({
-                concurrentExecution: "abortPendingRequest",
-                action: function () {
-                    return calls[callCount++];
-                }
-            });
-
-        //hook up a done handler
-        var commandResult;
-        command.done(function (result) {
-            commandResult = result;
-        });
-
-        //execute the command twice
-        command();
-        command();
-
-        //check that the first deferred object was aborted and that a second call was made
-        ok(calls[0].aborted, "First (pending) request should have been aborted");
-        equal(callCount, 2, "2 calls should have been made");
-
-        //resolve the second call and check it updates output
-        calls[1].resolve("result2");
-        equal(commandResult, "result2", "Second result should update content");
     });
 
     test("failed is initially false", function () {
@@ -542,5 +494,76 @@ function ($, ko) {
 
         //check the flag was set
         ok(command.failed(), "failed should have been set");
+    });
+
+    test("all success functions are run in correct context", function () {
+        var counts = {};
+
+        //helper to create stub functions that check the context and update a count
+        function createStubFunction(name) {
+            counts[name] = 0;
+            return function () {
+                equal(this.id, 123, "The context of the " + name + " function should be the view model");
+                counts[name]++;
+                return true; //only needed for canExecute but doesn't cause problems elsewhere
+            };
+        }
+
+        //the viewmodel itself
+        function ViewModel() {
+            this.id = 123;
+
+            this.action = ko.command({
+                action: this.execute,
+                canExecute: this.canExecute,
+            })
+            .done(this.done)
+            .always(this.always);
+        }
+
+        //stub functions on the prototype
+        ViewModel.prototype.execute = createStubFunction("execute");
+        ViewModel.prototype.canExecute = createStubFunction("canExecute");
+        ViewModel.prototype.done = createStubFunction("done");
+        ViewModel.prototype.always = createStubFunction("always");
+
+        var instance = new ViewModel();
+        instance.action();
+
+        equal(counts.execute, 1, "execute should have been called");
+        equal(counts.done, 1, "done should have been called");
+        equal(counts.always, 1, "always should have been called");
+        equal(counts.canExecute, 1, "canExecute should have been called");
+    });
+
+    test("fail function is run in correct context", function () {
+        var counts = {};
+
+        function createStubFunction(name) {
+            counts[name] = 0;
+            return function () {
+                equal(this.id, 123, "The context of the " + name + " function should be the view model");
+                counts[name]++;
+            };
+        }
+
+        function ViewModel() {
+            this.id = 123;
+
+            this.action = ko.command(function () {
+                throw "Error";
+            })
+            .fail(this.fail)
+            .always(this.always);
+        }
+
+        ViewModel.prototype.always = createStubFunction("always");
+        ViewModel.prototype.fail = createStubFunction("fail");
+
+        var instance = new ViewModel();
+        instance.action();
+
+        equal(counts.fail, 1, "fail should have been called");
+        equal(counts.always, 1, "always should have been called");
     });
 });
