@@ -2,6 +2,11 @@
 
 ko.plus is a collection of extensions to [KnockoutJs](http://knockoutjs.com/) that add to the core library.
 
+## Installation
+Get the ko.plus package [from NuGet](http://www.nuget.org/packages/ko.plus).
+
+    Install-Package ko.plus
+
 ## ko.command
 
 ko.command creates a representation of a command that exposes `isRunning`, `failed` and other observable properties to allow binding to command state.
