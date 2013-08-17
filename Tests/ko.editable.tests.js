@@ -1,11 +1,6 @@
 ﻿/*global require: false, module: false, test: false, raises: false, equal: false, ok: false, deepEqual: false*/
 
-require([
-    "jquery",
-    "knockout",
-    "ko.plus"],
-
-function ($, ko) {
+(function ($, ko) {
     "use strict";
 
     module("ko.editable Tests");
@@ -351,4 +346,4 @@ function ($, ko) {
         deepEqual(undefinedInitial(), []);
 
     });
-});
+}(jQuery, ko));
