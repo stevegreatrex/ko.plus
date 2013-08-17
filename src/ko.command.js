@@ -115,6 +115,25 @@
 		return _execute;
 	};
 
+	/**
+	* Performs the following bindings on the valueAccessor command:
+	* - loadingWhen: command.isRunning
+	* - click: command
+	* - enable: command.canExecute
+	*/
+	ko.bindingHandlers.command = {
+		init: function (element, valueAccessor, allBindingsAccessor) {
+			var command = ko.utils.unwrapObservable(valueAccessor());
+			ko.bindingHandlers.loadingWhen.init.call(this, element, command.isRunning, allBindingsAccessor);
+			ko.bindingHandlers.click.init.call(this, element, ko.observable(command), allBindingsAccessor);
+		},
+		update: function (element, valueAccessor, allBindingsAccessor) {
+			var command = ko.utils.unwrapObservable(valueAccessor());
+			ko.bindingHandlers.loadingWhen.update.call(this, element, command.isRunning, allBindingsAccessor);
+			ko.bindingHandlers.enable.update.call(this, element, command.canExecute, allBindingsAccessor);
+		}
+	};
+    
 	//factory method to create a $.Deferred that is already completed
 	function instantDeferred(resolve, returnValue, context) {
 		var deferred = $.Deferred();
