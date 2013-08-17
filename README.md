@@ -225,3 +225,14 @@ Non-default loader classes can also be assigned.
 ### Further Reading
 
 *  [Introductory Blog post](http://blog.greatrexpectations.com/2012/06/17/loading-placeholders-using-knockout-js/)
+
+## ko.bindingHandlers.command
+
+The `command` custom binding handler applies the following bindings for a `ko.command` instance specified through the `valueAccessor`:
+*  `click` bound to the command
+*  `loadingWhen` bound to `command.isRunning`
+*  `enable` bound to `command.canExecute`
+
+### Example Implementation
+
+    <button data-bind="command: someAction">Do Something</button>
