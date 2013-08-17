@@ -7,8 +7,6 @@
         waitSeconds: 0
     });
 
-    QUnit.config.autostart = false;
-
     require([
        "ko.command.tests",
        "ko.editable.tests"
