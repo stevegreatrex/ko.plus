@@ -222,6 +222,22 @@ The default option is `loader-dark` (grey spinner on a transparent background), 
 
 Non-default loader classes can also be assigned.
 
+### Notes
+Whilst primarily designed for container elements (`div`, `ul`, etc.) the `loadingWhen` binding will also work with elements that directly contain text (`button`, `a`, etc.).
+
+By default the loading spinner will overlay itself over the text in these scenarios.  For a slightly better appearance, try setting a specific background colour on the element to "hide" the text content.  For example, if you have `a` elements on a white background you could use the following:
+
+    /* CSS */
+	a > .loader { background-color: white; }
+
+	<!-- HTML -->
+	<body>
+		<!-- "Click Me" will be hidden by the white background whilst command is running -->
+		<a href="#" data-bind="click: command, loadingWhen: command.isRunning">Click Me</a>
+	</body>
+
+Important note: **don't** change the `background-image` - this is needed to display the loading spinner.
+
 ### Further Reading
 
 *  [Introductory Blog post](http://blog.greatrexpectations.com/2012/06/17/loading-placeholders-using-knockout-js/)
