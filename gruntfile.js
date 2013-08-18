@@ -27,11 +27,11 @@ module.exports = function (grunt) {
                 dest: "dist/<%= pkg.name %>.js"
             },
             css: {
-            	src: [
-                    "<%= meta.banner %>",
-                    "css/*.css",
-            	],
-            	dest: "dist/<%= pkg.name %>.css"
+				src: [
+					"<%= meta.banner %>",
+					"css/*.css",
+				],
+				dest: "dist/<%= pkg.name %>.css"
             }
         },
         uglify: {
@@ -89,6 +89,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask("test", ["jshint", "qunit"]);
 
-    grunt.registerTask("default", ["jshint", "concat", "uglify", "nuget"]);
+    grunt.registerTask("default", ["qunit", "jshint", "concat", "uglify", "nuget"]);
 
 };

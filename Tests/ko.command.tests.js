@@ -1,4 +1,4 @@
-﻿/*global require: false, module: false, test: false, raises: false, equal: false, ok: false*/
+﻿/*global ko: false, module: false, test: false, raises: false, equal: false, ok: false*/
 
 
 (function ($, ko) {
