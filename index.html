@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="ko.plus : Awesome extensions to KnockoutJS" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>ko.plus</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/stevegreatrex/ko.plus">View on GitHub</a>
+
+          <h1 id="project_title">ko.plus</h1>
+          <h2 id="project_tagline">Awesome extensions to KnockoutJS</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/stevegreatrex/ko.plus/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/stevegreatrex/ko.plus/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="koplus" class="anchor" href="#koplus"><span class="octicon octicon-link"></span></a>ko.plus</h1>
+
+<p>ko.plus is a collection of extensions to <a href="http://knockoutjs.com/">KnockoutJs</a> that add to the core library.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Get the ko.plus package <a href="http://www.nuget.org/packages/ko.plus">from NuGet</a>.</p>
+
+<pre><code>Install-Package ko.plus
+</code></pre>
+
+<h2>
+<a name="kocommand" class="anchor" href="#kocommand"><span class="octicon octicon-link"></span></a>ko.command</h2>
+
+<p>ko.command creates a representation of a command that exposes <code>isRunning</code>, <code>failed</code> and other observable properties to allow binding to command state.</p>
+
+<p>The created commands can be invoked directly (as you would a normal function) and as such can be bound to the <code>click</code> handler.
+They support both sychronous and asynchronous implementation code, and expose <code>done</code>, <code>fail</code> and <code>always</code> methods to allow continuations.</p>
+
+<h3>
+<a name="example-implementation" class="anchor" href="#example-implementation"><span class="octicon octicon-link"></span></a>Example Implementation</h3>
+
+<pre><code>function ViewModel() {
+    this.doSomething = ko.command(function() {
+        return $.get("...");
+    })
+    .done(function(data) {
+        //do something with the response
+    })
+    .fail(function(error) {
+        //handle the error
+    });
+}
+</code></pre>
+
+<p>The state properties can be bound in the UI:</p>
+
+<pre><code>&lt;span data-bind="visible: doSomething.isRunning"&gt;Loading...&lt;/span&gt;
+&lt;span data-bind="visible: doSomething.failed"&gt;Something went wrong!&lt;/span&gt;
+</code></pre>
+
+<h3>
+<a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h3>
+
+<h4>
+<a name="action" class="anchor" href="#action"><span class="octicon octicon-link"></span></a>action</h4>
+
+<p>The action function can be specified as the single parameter passed to <code>ko.command</code> or as the <code>action</code> property on an options object passed into the function.</p>
+
+<pre><code>ko.command(function() { /*...*/ });
+//or
+ko.command({
+    action: function() { /*...*/ })
+});
+</code></pre>
+
+<h4>
+<a name="canexecute" class="anchor" href="#canexecute"><span class="octicon octicon-link"></span></a>canExecute</h4>
+
+<p>An optional <code>canExecute</code> function can be specified to determine whether or not a command can currently be executed.</p>
+
+<pre><code>function ViewModel() {
+    this.doSomething = ko.command({
+        action: function() {
+            return $.get("...");
+        },
+        canExecute: function() {
+            //validation logic
+            return true;
+        }
+    });
+}
+</code></pre>
+
+<p>Note: the function passed as <code>canExecute</code> will be wrapped in a <code>ko.computed</code>, so if it uses other observable properties it will automatically be updated.
+If you need to manually inform a command that the value of <code>canExecute</code> has changed then you can call the <code>canExecuteHasMutated</code> function, which will force a reevaluation.</p>
+
+<h4>
+<a name="context" class="anchor" href="#context"><span class="octicon octicon-link"></span></a>context</h4>
+
+<p>The <code>context</code> option sets the context in which the callbacks and action functions will be executed.</p>
+
+<pre><code>function ViewModel() {
+    this.url = "...";
+
+    this.doSomething = ko.command({
+        action: function() {
+            return $.get(this.url);
+        },
+        context: this
+    });
+}
+</code></pre>
+
+<h3>
+<a name="properties" class="anchor" href="#properties"><span class="octicon octicon-link"></span></a>Properties</h3>
+
+<h4>
+<a name="isrunning" class="anchor" href="#isrunning"><span class="octicon octicon-link"></span></a>isRunning</h4>
+
+<p>An observable that indicates whether or not the command is currently running.</p>
+
+<h4>
+<a name="canexecute-1" class="anchor" href="#canexecute-1"><span class="octicon octicon-link"></span></a>canExecute</h4>
+
+<p>A computed observable that indicates whether or not the command is currently able to execute.</p>
+
+<h4>
+<a name="failed" class="anchor" href="#failed"><span class="octicon octicon-link"></span></a>failed</h4>
+
+<p>An observable that indicates whether or not the last invocation of the command failed.</p>
+
+<h3>
+<a name="functions" class="anchor" href="#functions"><span class="octicon octicon-link"></span></a>Functions</h3>
+
+<h4>
+<a name="done" class="anchor" href="#done"><span class="octicon octicon-link"></span></a>done</h4>
+
+<p>Attach a callback that will be invoked when the command completes successfully.</p>
+
+<h4>
+<a name="fail" class="anchor" href="#fail"><span class="octicon octicon-link"></span></a>fail</h4>
+
+<p>Attach a callback that will be invoked when the command fails.</p>
+
+<h4>
+<a name="always" class="anchor" href="#always"><span class="octicon octicon-link"></span></a>always</h4>
+
+<p>Attach a callback that will be invoked when the command either completes successfully or fails.</p>
+
+<h3>
+<a name="further-reading" class="anchor" href="#further-reading"><span class="octicon octicon-link"></span></a>Further Reading</h3>
+
+<ul>
+<li><a href="http://blog.greatrexpectations.com/2012/06/26/command-pattern-with-jquery-deferred-knockout/">Introductory Blog Post</a></li>
+<li><a href="http://blog.greatrexpectations.com/2012/07/12/command-pattern-v2-using-knockout/">Updated Blog Post</a></li>
+<li><a href="http://blog.greatrexpectations.com/2013/07/29/handling-this-in-ko-command/">Handling Context</a></li>
+</ul><h2>
+<a name="koeditable--koeditablearray" class="anchor" href="#koeditable--koeditablearray"><span class="octicon octicon-link"></span></a>ko.editable &amp; ko.editableArray</h2>
+
+<p>ko.editable creates an extendion of <code>ko.observable</code> with some additional properties to aid in beginning, cancelling and committing changes.
+ko.editableArray does the same for instances of <code>ko.observableArray</code>.</p>
+
+<h3>
+<a name="example-implementation-1" class="anchor" href="#example-implementation-1"><span class="octicon octicon-link"></span></a>Example Implementation</h3>
+
+<pre><code>function ViewModel() {
+   this.value = ko.editable(123);
+}
+
+var instance = new ViewModel();
+//instance.value -&gt; 123
+
+instance.value.beginEdit();
+instance.value(456);
+//instance.value -&gt; 456
+
+instance.value.cancelEdit();
+//instance.value -&gt; 123
+</code></pre>
+
+<h3>
+<a name="properties-1" class="anchor" href="#properties-1"><span class="octicon octicon-link"></span></a>Properties</h3>
+
+<h4>
+<a name="isediting" class="anchor" href="#isediting"><span class="octicon octicon-link"></span></a>isEditing</h4>
+
+<p>An observable property that indicates whether or not the editable is currently in edit mode.</p>
+
+<h3>
+<a name="functions-1" class="anchor" href="#functions-1"><span class="octicon octicon-link"></span></a>Functions</h3>
+
+<h4>
+<a name="beginedit" class="anchor" href="#beginedit"><span class="octicon octicon-link"></span></a>beginEdit</h4>
+
+<p>Puts the editable into edit mode.</p>
+
+<h4>
+<a name="endedit" class="anchor" href="#endedit"><span class="octicon octicon-link"></span></a>endEdit</h4>
+
+<p>Takes the editable out of edit mode, commiting any changes.</p>
+
+<h4>
+<a name="canceledit" class="anchor" href="#canceledit"><span class="octicon octicon-link"></span></a>cancelEdit</h4>
+
+<p>Takes the editable out of edit mode and reverts to value at the point when <code>beginEdit</code> was called.</p>
+
+<h4>
+<a name="rollback" class="anchor" href="#rollback"><span class="octicon octicon-link"></span></a>rollback</h4>
+
+<p>Without changing edit state, reverts back through historically committed values for this editable until it reaches the original value.</p>
+
+<h3>
+<a name="further-reading-1" class="anchor" href="#further-reading-1"><span class="octicon octicon-link"></span></a>Further Reading</h3>
+
+<ul>
+<li> <a href="http://blog.greatrexpectations.com/2012/09/20/editable-fields-with-cancelability-in-knockout/">Introductory Blog Post</a>
+</li>
+</ul><h2>
+<a name="komakeeditable" class="anchor" href="#komakeeditable"><span class="octicon octicon-link"></span></a>ko.makeEditable</h2>
+
+<p>ko.makeEditable adds to the functionality of <code>ko.editable</code> and <code>ko.editableArray</code> (which only apply to single properties) and expands to allow object graphs to be editable.</p>
+
+<p>This works by appending <code>beginEdit</code>, <code>cancelEdit</code>, <code>endEdit</code> and <code>rollback</code> methods to the target object that will visit all child properties and, if they are editable, invoke the appropriate function.</p>
+
+<p>The function will be applied recursively to:</p>
+
+<ul>
+<li> immediate child properties that are editable (whether instances of <code>ko.editable</code> or other editable view models)</li>
+<li> any editable objects found in child arrays (either editable arrays or normal)</li>
+</ul><h3>
+<a name="example-implementation-2" class="anchor" href="#example-implementation-2"><span class="octicon octicon-link"></span></a>Example Implementation</h3>
+
+<pre><code>function ViewModel() {
+    this.property1 = ko.editable();
+    this.property2 = ko.editable();
+    this.arrayProperty = ko.editableArray([
+        ko.editable(),
+        ko.editable()
+    ]);
+
+    ko.makeEditable(this);
+}
+
+var instance = new ViewModel();
+instance.beginEdit();
+
+instance.property1.isEditing(); // -&gt; true
+instance.property2.isEditing(); // -&gt; true
+instance.property1.isEditing(); // -&gt; true
+</code></pre>
+
+<h3>
+<a name="properties-2" class="anchor" href="#properties-2"><span class="octicon octicon-link"></span></a>Properties</h3>
+
+<h4>
+<a name="isediting-1" class="anchor" href="#isediting-1"><span class="octicon octicon-link"></span></a>isEditing</h4>
+
+<p>An observable property that indicates whether or not the editable is currently in edit mode.</p>
+
+<h3>
+<a name="functions-2" class="anchor" href="#functions-2"><span class="octicon octicon-link"></span></a>Functions</h3>
+
+<h4>
+<a name="beginedit-1" class="anchor" href="#beginedit-1"><span class="octicon octicon-link"></span></a>beginEdit</h4>
+
+<p>Puts the editable and all child editables into edit mode.</p>
+
+<h4>
+<a name="endedit-1" class="anchor" href="#endedit-1"><span class="octicon octicon-link"></span></a>endEdit</h4>
+
+<p>Takes the editable and all child editables out of edit mode, commiting any changes.</p>
+
+<h4>
+<a name="canceledit-1" class="anchor" href="#canceledit-1"><span class="octicon octicon-link"></span></a>cancelEdit</h4>
+
+<p>Takes the editable and all child editables out of edit mode and reverts to value at the point when <code>beginEdit</code> was called.</p>
+
+<h4>
+<a name="rollback-1" class="anchor" href="#rollback-1"><span class="octicon octicon-link"></span></a>rollback</h4>
+
+<p>Without changing edit state, reverts back through historically committed values for this editable until it reaches the original value for all child editables.</p>
+
+<h3>
+<a name="further-reading-2" class="anchor" href="#further-reading-2"><span class="octicon octicon-link"></span></a>Further Reading</h3>
+
+<ul>
+<li> <a href="http://blog.greatrexpectations.com/2013/05/29/editable-object-graphs-in-knockout/">Introductory Blog Post</a>
+</li>
+</ul><h2>
+<a name="kobindinghandlersloadingwhen" class="anchor" href="#kobindinghandlersloadingwhen"><span class="octicon octicon-link"></span></a>ko.bindingHandlers.loadingWhen</h2>
+
+<p>The <code>loadingWhen</code> custom binding handler replaces the contents of a container element with a loading placeholder when the bound value is truthy.</p>
+
+<h3>
+<a name="example-implementation-3" class="anchor" href="#example-implementation-3"><span class="octicon octicon-link"></span></a>Example Implementation</h3>
+
+<pre><code>&lt;div data-bind="loadingWhen: someAction.isRunning"&gt;
+    &lt;p&gt;This will content will be replaced when someAction.isRunning&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+
+<h3>
+<a name="options-1" class="anchor" href="#options-1"><span class="octicon octicon-link"></span></a>Options</h3>
+
+<h4>
+<a name="loaderclass" class="anchor" href="#loaderclass"><span class="octicon octicon-link"></span></a>loaderClass</h4>
+
+<p>The loading element is automatically assigned the <code>.loader</code> class (defined in <code>ko.plus.css</code>).<br>
+The <code>loaderClass</code> property specifies what additional class will be assigned to the loading element that sets the loading spinner.</p>
+
+<p>The default option is <code>loader-dark</code> (grey spinner on a transparent background), and the default <code>ko.plus.css</code> stylesheet contains a <code>loader-white</code> option (white spinner on a transparent background).</p>
+
+<p>Non-default loader classes can also be assigned.</p>
+
+<h3>
+<a name="notes" class="anchor" href="#notes"><span class="octicon octicon-link"></span></a>Notes</h3>
+
+<p>Whilst primarily designed for container elements (<code>div</code>, <code>ul</code>, etc.) the <code>loadingWhen</code> binding will also work with elements that directly contain text (<code>button</code>, <code>a</code>, etc.).</p>
+
+<p>By default the loading spinner will overlay itself over the text in these scenarios.  For a slightly better appearance, try setting a specific background colour on the element to "hide" the text content.  For example, if you have <code>a</code> elements on a white background you could use the following:</p>
+
+<pre><code>/* CSS */
+a &gt; .loader { background-color: white; }
+
+&lt;!-- HTML --&gt;
+&lt;body&gt;
+    &lt;!-- "Click Me" will be hidden by the white background whilst command is running --&gt;
+    &lt;a href="#" data-bind="click: command, loadingWhen: command.isRunning"&gt;Click Me&lt;/a&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>Important note: <strong>don't</strong> change the <code>background-image</code> - this is needed to display the loading spinner.</p>
+
+<h3>
+<a name="further-reading-3" class="anchor" href="#further-reading-3"><span class="octicon octicon-link"></span></a>Further Reading</h3>
+
+<ul>
+<li> <a href="http://blog.greatrexpectations.com/2012/06/17/loading-placeholders-using-knockout-js/">Introductory Blog post</a>
+</li>
+</ul><h2>
+<a name="kobindinghandlerscommand" class="anchor" href="#kobindinghandlerscommand"><span class="octicon octicon-link"></span></a>ko.bindingHandlers.command</h2>
+
+<p>The <code>command</code> custom binding handler applies the following bindings for a <code>ko.command</code> instance specified through the <code>valueAccessor</code>:</p>
+
+<ul>
+<li> <code>click</code> bound to the command</li>
+<li> <code>loadingWhen</code> bound to <code>command.isRunning</code>
+</li>
+<li> <code>enable</code> bound to <code>command.canExecute</code>
+</li>
+</ul><h3>
+<a name="example-implementation-4" class="anchor" href="#example-implementation-4"><span class="octicon octicon-link"></span></a>Example Implementation</h3>
+
+<pre><code>&lt;button data-bind="command: someAction"&gt;Do Something&lt;/button&gt;
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">ko.plus maintained by <a href="https://github.com/stevegreatrex">stevegreatrex</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
