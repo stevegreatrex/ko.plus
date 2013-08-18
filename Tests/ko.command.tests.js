@@ -1,12 +1,7 @@
 ﻿/*global require: false, module: false, test: false, raises: false, equal: false, ok: false*/
 
 
-require([
-    "jquery",
-    "knockout",
-    "ko.plus"],
-
-function ($, ko) {
+(function ($, ko) {
     "use strict";
 
     module("ko.command Tests");
@@ -566,4 +561,4 @@ function ($, ko) {
         equal(counts.fail, 1, "fail should have been called");
         equal(counts.always, 1, "always should have been called");
     });
-});
+}(jQuery, ko));
