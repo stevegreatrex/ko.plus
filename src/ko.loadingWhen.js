@@ -23,14 +23,7 @@
                 $element.css("position", "relative");
             }
 
-            //center the loader
-            $loader.css({
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                "margin-left": -($loader.width() / 2) + "px",
-                "margin-top": -($loader.height() / 2) + "px"
-            });
+           
         },
         update: function (element, valueAccessor) {
             var isLoading = ko.utils.unwrapObservable(valueAccessor()),
