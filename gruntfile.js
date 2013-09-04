@@ -7,7 +7,7 @@ module.exports = function (grunt) {
             banner: "/*=============================================================================\n" +
                     " *   Author:      Steve Greatrex - @stevegreatrex                               \n" +
                     " *                                                                              \n" +
-                    " *   Description: Helper extensions for KnockoutJs                              \n" +
+                    " *   Description: Awesome extensions for KnockoutJs                              \n" +
                     " *=============================================================================*/\n\n"
         },
         concat: {

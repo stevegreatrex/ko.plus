@@ -459,10 +459,10 @@
         ok(!actionCalled, "The action should not have been invoked");
     });
 
-    test("failed is initially false", function () {
+    test("failed is initially undefined", function () {
         var testSubject = ko.command(function () { });
 
-        ok(!testSubject.failed(), "failed should initially return false");
+        equal(testSubject.failed(), undefined, "failed should initially return undefined");
     });
 
     test("failed is set to true when operation fails", function () {
@@ -482,13 +482,13 @@
         command();
 
         //check that failed has been reset
-        ok(!command.failed(), "failed should have been reset");
+        equal(command.failed(), false, "failed should have been reset");
 
         //complete the async operation
         deferred.reject(responseData);
 
         //check the flag was set
-        ok(command.failed(), "failed should have been set");
+        equal(command.failed(), true, "failed should have been set");
     });
 
     test("all success functions are run in correct context", function () {

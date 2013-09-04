@@ -1,7 +1,7 @@
 /*=============================================================================
  *   Author:      Steve Greatrex - @stevegreatrex                               
  *                                                                              
- *   Description: Helper extensions for KnockoutJs                              
+ *   Description: Awesome extensions for KnockoutJs                              
  *=============================================================================*/
 
 (function (window, undefined) {
@@ -38,7 +38,7 @@
 		_isRunning = ko.observable(false),
 
 		//flag to indicate that the operation failed when last executed
-		_failed = ko.observable(false),
+		_failed = ko.observable(),
 		_failMessage = ko.observable(""),
 
 		//record callbacks

@@ -23,7 +23,7 @@
 		_isRunning = ko.observable(false),
 
 		//flag to indicate that the operation failed when last executed
-		_failed = ko.observable(false),
+		_failed = ko.observable(),
 		_failMessage = ko.observable(""),
 
 		//record callbacks
