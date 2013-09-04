@@ -2,6 +2,8 @@
 
 ko.plus is a collection of extensions to [KnockoutJs](http://knockoutjs.com/) that add to the core library.
 
+[![Build Status](https://travis-ci.org/stevegreatrex/ko.plus.png)](https://travis-ci.org/stevegreatrex/ko.plus)
+
 ## Installation
 Get the ko.plus package [from NuGet](http://www.nuget.org/packages/ko.plus).
 
