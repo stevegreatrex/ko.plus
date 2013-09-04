@@ -568,13 +568,10 @@
     });
 
     test("sets failMessage to the value returned from the fail handler", function () {
-    	var deferred = $.Deferred(),
-		   responseData = {};
+    	var deferred = $.Deferred();
 
-    	var command = ko.command({
-    		action: function () {
-    			return deferred;
-    		}
+    	var command = ko.command(function () {
+    		return deferred;
     	})
 		.fail(function() { }) //handler with no return value - to be ignored
 		.fail(function () { return "new error"; })
@@ -590,9 +587,30 @@
     	equal(command.failMessage(), "", "failMessage should have been reset");
 
     	//complete the async operation
-    	deferred.reject(responseData);
+    	deferred.reject();
 
     	//check the flag was set
     	equal(command.failMessage(), "new error", "failMessage should have been set");
+    });
+
+    test("completed is set after command finishes", function () {
+    	function checkCompletedBehaviour(makeComplete) {
+    		var deferred = $.Deferred();
+
+    		var command = ko.command(function () {
+    			return deferred;
+    		});
+
+    		equal(command.completed(), false, "completed should be false initially")
+
+    		command();
+    		equal(command.completed(), false, "completed should be false until the command has finished")
+
+    		makeComplete(deferred);
+    		equal(command.completed(), true, "completed should be true once the command has finished")
+    	}
+    	
+    	checkCompletedBehaviour(function (deferred) { deferred.resolve(); });
+    	checkCompletedBehaviour(function (deferred) { deferred.reject(); });
     });
 }(jQuery, ko));

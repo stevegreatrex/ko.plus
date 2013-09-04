@@ -40,6 +40,7 @@
 		//flag to indicate that the operation failed when last executed
 		_failed = ko.observable(),
 		_failMessage = ko.observable(""),
+		_completed = ko.observable(false),
 
 		//record callbacks
 		_callbacks = {
@@ -77,7 +78,7 @@
 
 			//set up our callbacks
 			promise
-				.always(_callbacks.always)
+				.always(_callbacks.always, function () { _completed(true); })
 				.fail(_callbacks.fail)
 				.done(_callbacks.done);
 
@@ -134,6 +135,7 @@
 		_execute.failMessage = _failMessage;
 		_execute.always = _always;
 		_execute.failed = _failed;
+		_execute.completed = _completed;
 
 		return _execute;
 	};
