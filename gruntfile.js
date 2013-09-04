@@ -45,7 +45,7 @@ module.exports = function (grunt) {
             }
         },
         qunit: {
-            files: ["tests/**/*.html"]
+            files: ["Tests/**/*.html"]
         },
         jshint: {
             files: ["src/**/*.js", "test/**/*.js"],
