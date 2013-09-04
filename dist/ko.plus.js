@@ -39,6 +39,7 @@
 
 		//flag to indicate that the operation failed when last executed
 		_failed = ko.observable(false),
+		_failMessage = ko.observable(""),
 
 		//record callbacks
 		_callbacks = {
@@ -58,6 +59,7 @@
 			//notify that we are running and clear any existing error message
 			_isRunning(true);
 			_failed(false);
+			_failMessage("");
 
 			//try to invoke the action and get a reference to the deferred object
 			var promise;
@@ -105,7 +107,12 @@
 		},
 		//function used to append failure callbacks
 		_fail = function (callback) {
-			_callbacks.fail.push(callback);
+			_callbacks.fail.push(function () {
+				var result = callback.apply(this, arguments);
+				if (result) {
+					_failMessage(result);
+				}
+			});
 			return _execute;
 		},
 		//function used to append always callbacks
@@ -124,6 +131,7 @@
 		_execute.canExecuteHasMutated = _canExecuteHasMutated;
 		_execute.done = _done;
 		_execute.fail = _fail;
+		_execute.failMessage = _failMessage;
 		_execute.always = _always;
 		_execute.failed = _failed;
 

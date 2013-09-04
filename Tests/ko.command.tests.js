@@ -561,4 +561,38 @@
         equal(counts.fail, 1, "fail should have been called");
         equal(counts.always, 1, "always should have been called");
     });
+
+    test("failMessage is initially empty", function () {
+    	var command = ko.command(function() {});
+    	equal(command.failMessage(), "", "failMessage should be blank");
+    });
+
+    test("sets failMessage to the value returned from the fail handler", function () {
+    	var deferred = $.Deferred(),
+		   responseData = {};
+
+    	var command = ko.command({
+    		action: function () {
+    			return deferred;
+    		}
+    	})
+		.fail(function() { }) //handler with no return value - to be ignored
+		.fail(function () { return "new error"; })
+    	.fail(function () { }); //handler with no return value - to be ignored
+
+    	//fake the error handler being set
+    	command.failMessage("error!");
+
+    	//execute the command
+    	command();
+
+    	//check that failMessage has been reset
+    	equal(command.failMessage(), "", "failMessage should have been reset");
+
+    	//complete the async operation
+    	deferred.reject(responseData);
+
+    	//check the flag was set
+    	equal(command.failMessage(), "new error", "failMessage should have been set");
+    });
 }(jQuery, ko));
