@@ -33,7 +33,7 @@
 		observable.cancelEdit = function () {
 			if (!observable.isEditing() || !rollbackValues.length) { return; }
 
-			cancelledValue = observable();
+			cancelledValue = getRollbackValue(observable);
 
 			observable(rollbackValues.pop());
 
@@ -121,6 +121,11 @@
 
 		target.rollback = function () {
 			forEachEditableProperty(target, function (prop) { prop.rollback(); });
+		};
+
+		target.undoCancel = function () {
+			forEachEditableProperty(target, function (prop) { prop.undoCancel(); });
+			target.isEditing(true);
 		};
 	};
 }(ko));

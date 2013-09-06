@@ -249,6 +249,7 @@
 		ok(target.endEdit, "endEdit should have been added");
 		ok(target.cancelEdit, "cancelEdit should have been added");
 		ok(target.rollback, "rollback should have been added");
+		ok(target.undoCancel, "undoCancel should have been added");
 	});
 
 	test("makeEditable methods affect isEditing correctly", function () {
@@ -272,6 +273,9 @@
 		target.beginEdit();
 		target.cancelEdit();
 		ok(!target.isEditing());
+
+		target.undoCancel();
+		ok(target.isEditing());
 	});
 
 	test("makeEditable methods affect child properties", function () {
@@ -318,6 +322,10 @@
 
 		rollback = function (editable) {
 			editable.rollback();
+		},
+
+		undoCancel = function (editable) {
+			editable.undoCancel();
 		};
 
 		//tests
@@ -333,6 +341,11 @@
 		target.cancelEdit();
 		eachTargetEditable(isNotEditing, "Edit should have been cancelled");
 		eachTargetEditable(isInitialValue, "All values should have been reset");
+
+		target.undoCancel();
+		eachTargetEditable(isEditing, "Should have re-entered edit mode");
+		eachTargetEditable(isNewValue, "Should have reverted to the cancelled value");
+		target.cancelEdit();
 
 		target.beginEdit();
 		eachTargetEditable(isEditing, "Should now be editing");
@@ -365,6 +378,11 @@
 		//cancel
 		editableArray.cancelEdit();
 		deepEqual(editableArray(), [1, 2, 3], "cancel failed");
+
+		//undo cancel
+		editableArray.undoCancel();
+		deepEqual(editableArray(), [3, 4, 1], "undoCancel failed");
+		editableArray.cancelEdit();
 
 		//commit
 		editableArray.beginEdit();
