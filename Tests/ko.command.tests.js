@@ -2,64 +2,64 @@
 
 
 (function ($, ko) {
-    "use strict";
+	"use strict";
 
-    module("ko.command Tests");
+	module("ko.command Tests");
 
-    test("throws when null options are specified", function () {
-        raises(function () {
-            ko.command();
-        }, /No options were specified/);
+	test("throws when null options are specified", function () {
+		raises(function () {
+			ko.command();
+		}, /No options were specified/);
     });
 
-    test("throws when no action is specified", function () {
-        raises(function () {
-            ko.command({});
-        }, /No action was specified in the options/);
-    });
+	test("throws when no action is specified", function () {
+		raises(function () {
+			ko.command({});
+		}, /No action was specified in the options/);
+	});
 
-    test("isRunning initially false", function () {
-        var command = ko.command({ action: {} });
-        equal(false, command.isRunning());
-    });
+	test("isRunning initially false", function () {
+		var command = ko.command({ action: {} });
+		equal(false, command.isRunning());
+	});
 
-    test("execute returns a completed deferred if the action does not return a promise", function () {
-        var command = ko.command({
-            action: function () { }
-        });
+	test("execute returns a completed deferred if the action does not return a promise", function () {
+		var command = ko.command({
+			action: function () { }
+		});
 
-        //execute the command
-        var result = command();
+		//execute the command
+		var result = command();
 
-        //check that the returned item is a completed promise
-        ok(result, "The result should be a completed promise");
-        ok(result.done, "The result should be a completed promise");
-        ok(result.fail, "The result should be a completed promise");
-        ok(result.always, "The result should be a completed promise");
+		//check that the returned item is a completed promise
+		ok(result, "The result should be a completed promise");
+		ok(result.done, "The result should be a completed promise");
+		ok(result.fail, "The result should be a completed promise");
+		ok(result.always, "The result should be a completed promise");
 
-        //check that we are no longer running
-        equal(command.isRunning(), false, "The command should not be running");
-    });
+		//check that we are no longer running
+		equal(command.isRunning(), false, "The command should not be running");
+	});
 
-    test("execute resolves completed deferred with original result if result is returned from function", function () {
-        var doneCalled = false,
-            actionResult = { value: 123 },
-            command = ko.command({
-                action: function () { return actionResult; }
-            });
+	test("execute resolves completed deferred with original result if result is returned from function", function () {
+		var doneCalled = false,
+			actionResult = { value: 123 },
+			command = ko.command({
+				action: function () { return actionResult; }
+			});
 
-        //execute the command and check the result
-        command().done(function (result) {
-            equal(result, actionResult, "The action's result should be passed to the done handler");
-            doneCalled = true;
-        });
+		//execute the command and check the result
+		command().done(function (result) {
+			equal(result, actionResult, "The action's result should be passed to the done handler");
+			doneCalled = true;
+		});
 
-        //check that the handler was actually called
-        ok(doneCalled, "The done handler should have been invoked immediately");
+		//check that the handler was actually called
+		ok(doneCalled, "The done handler should have been invoked immediately");
 
-        //check that we are no longer running
-        equal(command.isRunning(), false, "The command should not be running");
-    });
+		//check that we are no longer running
+		equal(command.isRunning(), false, "The command should not be running");
+	});
 
 
     test("execute runs fail handlers if the command action throws an error", function () {
@@ -563,54 +563,54 @@
     });
 
     test("failMessage is initially empty", function () {
-    	var command = ko.command(function() {});
-    	equal(command.failMessage(), "", "failMessage should be blank");
+		var command = ko.command(function() {});
+		equal(command.failMessage(), "", "failMessage should be blank");
     });
 
-    test("sets failMessage to the value returned from the fail handler", function () {
-    	var deferred = $.Deferred();
+	test("sets failMessage to the value returned from the fail handler", function () {
+		var deferred = $.Deferred();
 
-    	var command = ko.command(function () {
-    		return deferred;
-    	})
+		var command = ko.command(function () {
+			return deferred;
+		})
 		.fail(function() { }) //handler with no return value - to be ignored
 		.fail(function () { return "new error"; })
-    	.fail(function () { }); //handler with no return value - to be ignored
+		.fail(function () { }); //handler with no return value - to be ignored
 
-    	//fake the error handler being set
-    	command.failMessage("error!");
+		//fake the error handler being set
+		command.failMessage("error!");
 
-    	//execute the command
-    	command();
+		//execute the command
+		command();
 
-    	//check that failMessage has been reset
-    	equal(command.failMessage(), "", "failMessage should have been reset");
+		//check that failMessage has been reset
+		equal(command.failMessage(), "", "failMessage should have been reset");
 
-    	//complete the async operation
-    	deferred.reject();
+		//complete the async operation
+		deferred.reject();
 
-    	//check the flag was set
-    	equal(command.failMessage(), "new error", "failMessage should have been set");
-    });
+		//check the flag was set
+		equal(command.failMessage(), "new error", "failMessage should have been set");
+	});
 
-    test("completed is set after command finishes", function () {
-    	function checkCompletedBehaviour(makeComplete) {
-    		var deferred = $.Deferred();
+	test("completed is set after command finishes", function () {
+		function checkCompletedBehaviour(makeComplete) {
+			var deferred = $.Deferred();
 
-    		var command = ko.command(function () {
-    			return deferred;
-    		});
+			var command = ko.command(function () {
+				return deferred;
+			});
 
-    		equal(command.completed(), false, "completed should be false initially")
+			equal(command.completed(), false, "completed should be false initially");
 
-    		command();
-    		equal(command.completed(), false, "completed should be false until the command has finished")
+			command();
+			equal(command.completed(), false, "completed should be false until the command has finished");
 
-    		makeComplete(deferred);
-    		equal(command.completed(), true, "completed should be true once the command has finished")
-    	}
-    	
-    	checkCompletedBehaviour(function (deferred) { deferred.resolve(); });
-    	checkCompletedBehaviour(function (deferred) { deferred.reject(); });
-    });
+			makeComplete(deferred);
+			equal(command.completed(), true, "completed should be true once the command has finished");
+		}
+
+		checkCompletedBehaviour(function (deferred) { deferred.resolve(); });
+		checkCompletedBehaviour(function (deferred) { deferred.reject(); });
+	});
 }(jQuery, ko));
