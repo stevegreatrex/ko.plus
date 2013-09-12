@@ -358,6 +358,26 @@
 		eachTargetEditable(isInitialValue, "All values should have been rolled back");
 	});
 
+	test("makeEditable undoCancel honours isEditable", function () {
+		var isEditable = true,
+			target = {
+				value: ko.editable(),
+				isEditable: function () { return isEditable; }
+			};
+
+		ko.editable.makeEditable(target);
+
+		target.beginEdit();
+		target.value("updated");
+		target.cancelEdit();
+
+		isEditable = false;
+		target.undoCancel();
+		equal(target.value(), "updated", "Cancelled value should have been rolled back");
+		equal(target.isEditing(), false, "Should not be editing though - isEditable is false");
+
+	});
+
 	test("editableArray behaves as a regular editable", function () {
 		var editableArray = ko.editableArray();
 		equal(editableArray().length, 0, "Default array should be empty");

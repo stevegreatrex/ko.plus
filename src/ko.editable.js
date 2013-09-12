@@ -125,7 +125,7 @@
 
 		target.undoCancel = function () {
 			forEachEditableProperty(target, function (prop) { prop.undoCancel(); });
-			target.isEditing(true);
+			target.beginEdit();
 		};
 	};
 }(ko));
