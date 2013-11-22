@@ -171,7 +171,7 @@ The function will be applied recursively to:
             ko.editable()
         ]);
 
-        ko.makeEditable(this);
+        ko.editable.makeEditable(this);
     }
 
     var instance = new ViewModel();
