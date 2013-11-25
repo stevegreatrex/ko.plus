@@ -132,10 +132,10 @@
 	* - enable: command.canExecute
 	*/
 	ko.bindingHandlers.command = {
-		init: function (element, valueAccessor, allBindingsAccessor) {
+		init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 			var command = ko.utils.unwrapObservable(valueAccessor());
 			ko.bindingHandlers.loadingWhen.init.call(this, element, command.isRunning, allBindingsAccessor);
-			ko.bindingHandlers.click.init.call(this, element, ko.observable(command), allBindingsAccessor);
+			ko.bindingHandlers.click.init.call(this, element, ko.observable(command), allBindingsAccessor, viewModel, bindingContext);
 		},
 		update: function (element, valueAccessor, allBindingsAccessor) {
 			var command = ko.utils.unwrapObservable(valueAccessor());
