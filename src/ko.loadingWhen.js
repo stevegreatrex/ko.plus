@@ -11,7 +11,7 @@ ko.bindingHandlers.loadingWhen = {
         var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || "loader-white",
 			$element = $(element),
 			currentPosition = $element.css("position"),
-			$loader = $("<div>", { "class": loaderClass }).addClass("loader").hide();
+			$loader = $("<span>", { "class": loaderClass }).addClass("loader").hide();
 
         //add the loader
         $element.append($loader);
@@ -26,8 +26,8 @@ ko.bindingHandlers.loadingWhen = {
     update: function (element, valueAccessor) {
         var isLoading = ko.unwrap(valueAccessor()),
 			$element = $(element),
-			$childrenToHide = $element.children(":not(div.loader)"),
-			$loader = $element.find("div.loader");
+			$childrenToHide = $element.children(":not(span.loader)"),
+			$loader = $element.find("span.loader");
 
         if (isLoading) {
             $childrenToHide.css("visibility", "hidden").attr("disabled", "disabled");

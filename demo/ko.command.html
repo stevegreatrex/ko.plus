@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ko.command Demo</title>
+
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../dist/ko.plus.css" />
+</head>
+<body>
+	<button class="btn btn-primary" data-bind="command: slowAction">
+		<span>Click me!</span>
+	</button>
+	<p>
+		Result from server: <strong data-bind="text:result"></strong>
+	</p>
+	<!-- dependencies -->
+	<script src="https://code.jquery.com/jquery.js"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<script src="../scripts/knockout-3.0.0.js"></script>
+	<script src="../dist/ko.plus.js"></script>
+
+	<script>
+	function ViewModel() {
+		var self    = this;
+		this.result = ko.observable();
+
+		this.slowAction = ko.command(function() {
+			self.result("");
+			var promise = $.Deferred();
+
+			setTimeout(function () {
+				//do something slow...
+				promise.resolve("response data");
+			}, 3000);
+
+			return promise.promise();
+		}).done(function(result) {
+			self.result(result);
+		});
+	}
+
+	ko.applyBindings(new ViewModel());
+	</script>
+
+	
+	
+</body>
+</html>

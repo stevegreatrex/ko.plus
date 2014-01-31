@@ -147,12 +147,12 @@ ko.command = function (options) {
 */
 ko.bindingHandlers.command = {
 	init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var command = ko.utils.unwrapObservable(valueAccessor());
+		var command = ko.unwrap(valueAccessor());
 		ko.bindingHandlers.loadingWhen.init.call(this, element, command.isRunning, allBindingsAccessor);
 		ko.bindingHandlers.click.init.call(this, element, ko.observable(command), allBindingsAccessor, viewModel, bindingContext);
 	},
 	update: function (element, valueAccessor, allBindingsAccessor) {
-		var command = ko.utils.unwrapObservable(valueAccessor());
+		var command = ko.unwrap(valueAccessor());
 		ko.bindingHandlers.loadingWhen.update.call(this, element, command.isRunning, allBindingsAccessor);
 		ko.bindingHandlers.enable.update.call(this, element, command.canExecute, allBindingsAccessor);
 	}
@@ -308,7 +308,7 @@ ko.bindingHandlers.loadingWhen = {
         var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || "loader-white",
 			$element = $(element),
 			currentPosition = $element.css("position"),
-			$loader = $("<div>", { "class": loaderClass }).addClass("loader").hide();
+			$loader = $("<span>", { "class": loaderClass }).addClass("loader").hide();
 
         //add the loader
         $element.append($loader);
@@ -323,8 +323,8 @@ ko.bindingHandlers.loadingWhen = {
     update: function (element, valueAccessor) {
         var isLoading = ko.unwrap(valueAccessor()),
 			$element = $(element),
-			$childrenToHide = $element.children(":not(div.loader)"),
-			$loader = $element.find("div.loader");
+			$childrenToHide = $element.children(":not(span.loader)"),
+			$loader = $element.find("span.loader");
 
         if (isLoading) {
             $childrenToHide.css("visibility", "hidden").attr("disabled", "disabled");
