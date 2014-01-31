@@ -78,7 +78,7 @@ var forEachEditableProperty = function (target, action) {
 				action(value);
 			}
 
-			var unwrappedValue = ko.utils.unwrapObservable(value);
+			var unwrappedValue = ko.unwrap(value);
 
 			//editables in arrays
 			if (unwrappedValue && unwrappedValue.length) {
