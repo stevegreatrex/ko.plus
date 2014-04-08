@@ -31,7 +31,7 @@ ko.bindingHandlers.loadingWhen = {
 
         if (isLoading) {
             $childrenToHide.css("visibility", "hidden").attr("disabled", "disabled");
-            $loader.show();
+            $loader.stop(true, true).show();
         }
         else {
             $loader.fadeOut("fast");
