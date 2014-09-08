@@ -18,32 +18,32 @@ ko.command = function (options) {
 	var
 
 	//flag to indicate that the operation is running
-	_isRunning = ko.observable(false),
+	isRunning = ko.observable(false),
 
 	//flag to indicate that the operation failed when last executed
-	_failed = ko.observable(),
-	_failMessage = ko.observable(""),
-	_completed = ko.observable(false),
+	failed = ko.observable(),
+	failMessage = ko.observable(""),
+	completed = ko.observable(false),
 
 	//record callbacks
-	_callbacks = {
+	callbacks = {
 		done: [],
-		fail: [function () { _failed(true); }],
-		always: [function () { _isRunning(false); }]
+		fail: [function () { failed(true); }],
+		always: [function () { isRunning(false); }]
 	},
 
 	//execute function (and return object
-	_execute = function () {
+	execute = function () {
 		//check if we are able to execute
-		if (!_canExecuteWrapper.call(options.context || this)) {
+		if (!canExecuteWrapper.call(options.context || this)) {
 			//dont attach any global handlers
 			return instantDeferred(false, null, options.context || this).promise();
 		}
 
 		//notify that we are running and clear any existing error message
-		_isRunning(true);
-		_failed(false);
-		_failMessage("");
+		isRunning(true);
+		failed(false);
+		failMessage("");
 
 		//try to invoke the action and get a reference to the deferred object
 		var promise;
@@ -61,66 +61,66 @@ ko.command = function (options) {
 
 		//set up our callbacks
 		promise
-			.always(_callbacks.always, function () { _completed(true); })
-			.fail(_callbacks.fail)
-			.done(_callbacks.done);
+			.always(callbacks.always, function () { completed(true); })
+			.fail(callbacks.fail)
+			.done(callbacks.done);
 
 		return promise;
 	},
 
 	//canExecute flag
-	_forceRefreshCanExecute = ko.observable(), //note, this is to allow us to force a re-evaluation of the computed _canExecute observable
-	_canExecuteWrapper = options.canExecute || function () { return true; },
-	_canExecute = ko.computed({
+	forceRefreshCanExecute = ko.observable(), //note, this is to allow us to force a re-evaluation of the computed canExecute observable
+	canExecuteWrapper = options.canExecute || function () { return true; },
+	canExecute = ko.computed({
 		deferEvaluation: true,
 		read: function () {
-			_forceRefreshCanExecute(); //just get the value so that we register _canExecute with _forceRefreshCanExecute
-			return !_isRunning() && _canExecuteWrapper.call(options.context || this);
+			forceRefreshCanExecute(); //just get the value so that we register canExecute with forceRefreshCanExecute
+			return !isRunning() && canExecuteWrapper.call(options.context || this);
 		}
 	}, options.context || this),
 
 	//invalidate canExecute
-	_canExecuteHasMutated = function () {
-		_forceRefreshCanExecute.notifySubscribers();
+	canExecuteHasMutated = function () {
+		forceRefreshCanExecute.notifySubscribers();
 	},
 
 	//function used to append done callbacks
-	_done = function (callback) {
-		_callbacks.done.push(callback);
-		return _execute;
+	done = function (callback) {
+		callbacks.done.push(callback);
+		return execute;
 	},
 	//function used to append failure callbacks
-	_fail = function (callback) {
-		_callbacks.fail.push(function () {
+	fail = function (callback) {
+		callbacks.fail.push(function () {
 			var result = callback.apply(this, arguments);
 			if (result) {
-				_failMessage(result);
+				failMessage(result);
 			}
 		});
-		return _execute;
+		return execute;
 	},
 	//function used to append always callbacks
-	_always = function (callback) {
-		_callbacks.always.push(callback);
-		return _execute;
+	always = function (callback) {
+		callbacks.always.push(callback);
+		return execute;
 	};
 
 	//attach the done and fail handlers on the options if specified
-	if (options.done) { _callbacks.done.push(options.done); }
-	if (options.fail) { _callbacks.fail.push(options.fail); }
+	if (options.done) { callbacks.done.push(options.done); }
+	if (options.fail) { callbacks.fail.push(options.fail); }
 
 	//public properties
-	_execute.isRunning = _isRunning;
-	_execute.canExecute = _canExecute;
-	_execute.canExecuteHasMutated = _canExecuteHasMutated;
-	_execute.done = _done;
-	_execute.fail = _fail;
-	_execute.failMessage = _failMessage;
-	_execute.always = _always;
-	_execute.failed = _failed;
-	_execute.completed = _completed;
+	execute.isRunning = isRunning;
+	execute.canExecute = canExecute;
+	execute.canExecuteHasMutated = canExecuteHasMutated;
+	execute.done = done;
+	execute.fail = fail;
+	execute.failMessage = failMessage;
+	execute.always = always;
+	execute.failed = failed;
+	execute.completed = completed;
 
-	return _execute;
+	return execute;
 };
 
 /**

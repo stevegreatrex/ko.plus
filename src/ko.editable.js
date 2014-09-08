@@ -125,3 +125,7 @@ ko.editable.makeEditable = function (target) {
 		target.beginEdit();
 	};
 };
+
+ko.extenders.editable = function(observable) {
+	return toEditable(observable);
+};

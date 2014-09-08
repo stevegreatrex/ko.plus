@@ -8,11 +8,12 @@
 	height: 100%;
 	width: 100%;
 	background-repeat: no-repeat;
-    background-position: center;
+    	background-position: center;
 	position: absolute;
 	top: 0;
 	left: 0;
 	display:block;
+	pointer-events: none;
 }
 
 .loader-dark {

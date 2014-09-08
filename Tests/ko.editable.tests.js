@@ -322,10 +322,6 @@
 
 		rollback = function (editable) {
 			editable.rollback();
-		},
-
-		undoCancel = function (editable) {
-			editable.undoCancel();
 		};
 
 		//tests
@@ -460,5 +456,13 @@
 		deepEqual(nullInitial(), []);
 		deepEqual(undefinedInitial(), []);
 
+	});
+
+	test("can be used through extenders", function() {
+		var target = ko.observable().extend({ editable: true });
+
+		ok(target.isEditing, "Target should have been made editable");
+		ok(target.beginEdit, "Target should have been made editable");
+		ok(target.cancelEdit, "Target should have been made editable");
 	});
 }(jQuery, ko));
