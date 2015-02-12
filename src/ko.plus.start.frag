@@ -8,3 +8,4 @@
             factory(window.jQuery, window.ko);
         }
     }(function ($, ko) {
+	"use strict";
