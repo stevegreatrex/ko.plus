@@ -295,7 +295,7 @@ The property path can contain either normal or observable nested parameters.  Fo
 ```
 ...any of the following sort paths are valid:
 
- * `id'` sorts by the root `id` property
+ * `id` sorts by the root `id` property
  * `name` sorts by the `name` property and reacts to changes
  * `children.length` sorts by the number of items in the `children` collection
  * `nested.nestedProperty` sorts by the nested property value
