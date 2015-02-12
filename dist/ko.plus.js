@@ -382,6 +382,47 @@ ko.extenders.editable = function(observable) {
 
 		return target;
 	};
+
+	/**
+	 * Adds a sort caret to a header element and binds to the setSortKey property
+	 * for the specified source collection.
+	 */
+	ko.bindingHandlers.sortBy = {
+		init: function(element, valueAccessor) {
+
+			var options = ko.unwrap(valueAccessor());
+			if (!options) { return; }
+
+			var source = options.source;
+			var key    = ko.unwrap(options.key);
+
+			if (!source || !key || !source.sortKey) { return; }
+
+			var $sortCaret = $("<span>").addClass('sort-caret');
+
+			function updateCaret() {
+				$sortCaret.css('display', source.sortKey() === key ? 'inline-block' : 'none');
+				if (source.sortDescending()) {
+					$sortCaret.css({ transform: 'rotate(0)' });
+				} else {
+					$sortCaret.css({ transform: 'rotate(180deg)' });
+				}
+			}
+
+			$(element)
+				.css({ position: 'relative' })
+				.append($sortCaret)
+				.click(function() {
+					source.setSortKey(key);
+					updateCaret();
+				});
+
+			source.sortKey.subscribe(updateCaret);
+			source.sortDescending.subscribe(updateCaret);
+			updateCaret();
+		}
+	};
+
 }(jQuery, ko));
 ;/*global jQuery:false, ko:false*/
 

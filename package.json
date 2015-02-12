@@ -1,6 +1,6 @@
 {
   "name": "ko.plus",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9",

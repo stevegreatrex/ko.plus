@@ -323,3 +323,10 @@ A helper function that sets the `sortKey` property to the specified value and to
 
       // source.sortKey() === 'name'
       // source.sortDescending() === false
+
+### sortBy Binding Handler
+`ko.plus` provides a binding handler to assist in the display of sorted elements: `sortBy`.
+
+    <th data-bind="sortBy: { source: sourceCollection, key: 'sort.key' }"></th>
+
+This handler attaches a `click` event handler to the element and injects a child caret element that displays the current direction of sort.
