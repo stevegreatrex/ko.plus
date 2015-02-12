@@ -21,6 +21,7 @@ module.exports = function (grunt) {
                     "src/ko.plus.start.frag",
                     "src/ko.command.js",
                     "src/ko.editable.js",
+										"src/ko.sortable.js",
                     "src/ko.loadingWhen.js",
                     "src/ko.plus.end.frag",
                 ],
@@ -95,7 +96,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-clear");
 
-    grunt.registerTask("test", ["qunit", "jshint"]);
-    grunt.registerTask("default", ["qunit", "jshint", "concat", "uglify", "nuget"]);
+    grunt.registerTask("test", ["concat", "qunit", "jshint"]);
+    grunt.registerTask("default", ["concat", "qunit", "jshint", "uglify", "nuget"]);
 
 };
