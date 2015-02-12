@@ -103,6 +103,12 @@ ko.command = function (options) {
 	always = function (callback) {
 		callbacks.always.push(callback);
 		return execute;
+	},
+	then = function(resolve, reject) {
+		if (resolve) { callbacks.done.push(resolve); }
+		if (reject) { callbacks.fail.push(reject); }
+
+		return execute;
 	};
 
 	//attach the done and fail handlers on the options if specified
@@ -115,6 +121,7 @@ ko.command = function (options) {
 	execute.canExecuteHasMutated = canExecuteHasMutated;
 	execute.done = done;
 	execute.fail = fail;
+	execute.then = then;
 	execute.failMessage = failMessage;
 	execute.always = always;
 	execute.failed = failed;
