@@ -223,8 +223,41 @@
 		deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4
 		], 'should have sorted by the specified sort key');
+	});
+	
+	test('can sort on strings', function() {
+		var source = ko.observableArray([
+			'aa',
+			'ba',
+			'b',
+			'ab',
+			'a'
+		]).extend({ sortable: true });
 
+		deepEqual(source(), [
+			'a',
+			'aa',
+			'ab',
+			'b',
+			'ba'
+		], 'Strings should be sorted correctly');
+	});
 
+	test('treats null nested properties as null', function() {
+		var source = ko.observableArray([
+			{ id: 4 },
+			{ id: 1, nested: { name: '..' } },
+			{ id: 2, nested: { name: '.' } },
+			{ id: 3, nested: { } }
+		]).extend({
+			sortable: {
+				key: 'nested.name.length'
+			}
+		});
+
+		deepEqual(source().map(function(s) { return s.id; }), [
+			4, 3, 2, 1
+		], 'should have sorted by the nested id');
 	});
 
 }(jQuery, ko));

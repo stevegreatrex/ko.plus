@@ -12,6 +12,8 @@
 
 		function unwrapPath(object, path) {
 			function unwrap(target, index) {
+				if (!target) { return null; }
+
 				if (ko.isObservable(target[index])) {
 					subscriptions.push(target[index].subscribe(sortList));
 				}
