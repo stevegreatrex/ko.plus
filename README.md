@@ -14,10 +14,10 @@ Get the ko.plus package [from NuGet](http://www.nuget.org/packages/ko.plus).
 ko.command creates a representation of a command that exposes `isRunning`, `failed` and other observable properties to allow binding to command state.
 
 The created commands can be invoked directly (as you would a normal function) and as such can be bound to the `click` handler.
-They support both sychronous and asynchronous implementation code, and expose `done`, `fail` and `always` methods to allow continuations.
+They support both synchronous and asynchronous implementation code, and expose `done`, `fail` and `always` methods to allow continuations.
 
 ### Example Implementation
-
+```javascript
     function ViewModel() {
         this.doSomething = ko.command(function() {
             return $.get("...");
@@ -29,26 +29,26 @@ They support both sychronous and asynchronous implementation code, and expose `d
             //handle the error
         });
     }
-
+```
 The state properties can be bound in the UI:
-
+```html
     <span data-bind="visible: doSomething.isRunning">Loading...</span>
     <span data-bind="visible: doSomething.failed">Something went wrong!</span>
-
+```
 ### Options
 
 #### action
 The action function can be specified as the single parameter passed to `ko.command` or as the `action` property on an options object passed into the function.
-
+```javascript
     ko.command(function() { /*...*/ });
     //or
     ko.command({
         action: function() { /*...*/ })
     });
-
+```
 #### canExecute
 An optional `canExecute` function can be specified to determine whether or not a command can currently be executed.
-
+```javascript
     function ViewModel() {
         this.doSomething = ko.command({
             action: function() {
@@ -60,13 +60,13 @@ An optional `canExecute` function can be specified to determine whether or not a
             }
         });
     }
-
+```
 Note: the function passed as `canExecute` will be wrapped in a `ko.computed`, so if it uses other observable properties it will automatically be updated.
 If you need to manually inform a command that the value of `canExecute` has changed then you can call the `canExecuteHasMutated` function, which will force a reevaluation.
 
 #### context
 The `context` option sets the context in which the callbacks and action functions will be executed.
-
+```javscript
     function ViewModel() {
         this.url = "...";
 
@@ -77,7 +77,7 @@ The `context` option sets the context in which the callbacks and action function
             context: this
         });
     }
-
+```
 ### Properties
 
 #### isRunning
@@ -112,7 +112,7 @@ ko.editable creates an extendion of `ko.observable` with some additional propert
 ko.editableArray does the same for instances of `ko.observableArray`.
 
 ### Example Implementation
-
+```javascript
     function ViewModel() {
        this.value = ko.editable(123);
     }
@@ -126,7 +126,7 @@ ko.editableArray does the same for instances of `ko.observableArray`.
 
     instance.value.cancelEdit();
     //instance.value -> 123
-
+```
 ### Properties
 
 #### isEditing
@@ -162,7 +162,7 @@ The function will be applied recursively to:
  *  any editable objects found in child arrays (either editable arrays or normal)
 
 ### Example Implementation
-
+```javascript
     function ViewModel() {
         this.property1 = ko.editable();
         this.property2 = ko.editable();
@@ -180,7 +180,7 @@ The function will be applied recursively to:
     instance.property1.isEditing(); // -> true
     instance.property2.isEditing(); // -> true
     instance.property1.isEditing(); // -> true
-
+```
 ### Properties
 
 #### isEditing
@@ -210,10 +210,11 @@ The `loadingWhen` custom binding handler replaces the contents of a container el
 
 ### Example Implementation
 
+```html
     <div data-bind="loadingWhen: someAction.isRunning">
 		<p>This will content will be replaced when someAction.isRunning</p>
 	</div>
-
+```
 ### Options
 
 #### loaderClass
@@ -229,14 +230,17 @@ Whilst primarily designed for container elements (`div`, `ul`, etc.) the `loadin
 
 By default the loading spinner will overlay itself over the text in these scenarios.  For a slightly better appearance, try setting a specific background colour on the element to "hide" the text content.  For example, if you have `a` elements on a white background you could use the following:
 
+```css
     /* CSS */
 	a > .loader { background-color: white; }
-
+```
+```html
 	<!-- HTML -->
 	<body>
 		<!-- "Click Me" will be hidden by the white background whilst command is running -->
 		<a href="#" data-bind="click: command, loadingWhen: command.isRunning">Click Me</a>
 	</body>
+```
 
 Important note: **don't** change the `background-image` - this is needed to display the loading spinner.
 
@@ -253,14 +257,18 @@ The `command` custom binding handler applies the following bindings for a `ko.co
 
 ### Example Implementation
 
+```html
     <button data-bind="command: someAction">Do Something</button>
+```
 
 ## sortable extender
 The `sortable` extender attaches sorting behaviour to the target observable array
 
+```javascript
     var source = ko.observableArray([5, 3, 1, 2]).extend({ sortable: true });
 
     // --> source() === [1, 2, 3, 5]
+```
 
 Sorting is live (i.e. any changes to the key, direction or source list will result in re-sorting) and properties are exposed to control the sort behaviour.
 
@@ -274,6 +282,7 @@ The `key` parameter can be left blank (causing the default JS sort to be applied
 
 The property path can contain either normal or observable nested parameters.  For example, given a list of these objects
 
+```javascript
     {
         id: 1,
         name: ko.observable('name'),
@@ -282,7 +291,7 @@ The property path can contain either normal or observable nested parameters.  Fo
             nestedProperty: ko.observable('value')
         }
     }
-
+```
 ...any of the following sort paths are valid:
 
  * `id'` sorts by the root `id` property
@@ -304,25 +313,27 @@ Observable property that determines whether or not the sorting is reversed.  Cha
 #### setSortKey
 A helper function that sets the `sortKey` property to the specified value and toggles `sortDescending` if the same key is already set
 
+```javascript
     var source = ko.observableArray().extend({
-       sortable: {
+        sortable: {
          key: 'id',
          descending: false
-       }
-     });
+        }
+    });
 
-     // source.sortKey() === 'id'
-     // source.sortDescending() === false
+    // source.sortKey() === 'id'
+    // source.sortDescending() === false
 
-     source.setSortKey('id');
+    source.setSortKey('id');
 
-     // source.sortKey() === 'id'
-     // source.sortDescending() === true
+    // source.sortKey() === 'id'
+    // source.sortDescending() === true
 
-     source.setSortKey('name');
+    source.setSortKey('name');
 
-      // source.sortKey() === 'name'
-      // source.sortDescending() === false
+    // source.sortKey() === 'name'
+    // source.sortDescending() === false
+```
 
 ### sortBy Binding Handler
 `ko.plus` provides a binding handler to assist in the display of sorted elements: `sortBy`.
