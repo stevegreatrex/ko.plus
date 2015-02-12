@@ -254,3 +254,72 @@ The `command` custom binding handler applies the following bindings for a `ko.co
 ### Example Implementation
 
     <button data-bind="command: someAction">Do Something</button>
+
+## sortable extender
+The `sortable` extender attaches sorting behaviour to the target observable array
+
+    var source = ko.observableArray([5, 3, 1, 2]).extend({ sortable: true });
+
+    // --> source() === [1, 2, 3, 5]
+
+Sorting is live (i.e. any changes to the key, direction or source list will result in re-sorting) and properties are exposed to control the sort behaviour.
+
+### Options
+The parameters for the extender accept an optional key and a `descending` flag
+
+
+
+#### key
+The `key` parameter can be left blank (causing the default JS sort to be applied) or can specify a property or property path to be evaluated.
+
+The property path can contain either normal or observable nested parameters.  For example, given a list of these objects
+
+    {
+        id: 1,
+        name: ko.observable('name'),
+        children: ko.observableArray(),
+        nested: {
+            nestedProperty: ko.observable('value')
+        }
+    }
+
+...any of the following sort paths are valid:
+
+ * `id'` sorts by the root `id` property
+ * `name` sorts by the `name` property and reacts to changes
+ * `children.length` sorts by the number of items in the `children` collection
+ * `nested.nestedProperty` sorts by the nested property value
+
+#### descending
+Determines whether or not the sorting should be reversed
+
+### Properties and Functions
+
+#### sortKey
+Observable property that exposes the current sort key.  Changing this will change the sorting immediately
+
+#### sortDescending
+Observable property that determines whether or not the sorting is reversed.  Changing this will change the sorting immediately
+
+#### setSortKey
+A helper function that sets the `sortKey` property to the specified value and toggles `sortDescending` if the same key is already set
+
+    var source = ko.observableArray().extend({
+       sortable: {
+         key: 'id',
+         descending: false
+       }
+     });
+
+     // source.sortKey() === 'id'
+     // source.sortDescending() === false
+
+     source.setSortKey('id');
+
+     // source.sortKey() === 'id'
+     // source.sortDescending() === true
+
+     source.setSortKey('name');
+
+      // source.sortKey() === 'name'
+      // source.sortDescending() === false
