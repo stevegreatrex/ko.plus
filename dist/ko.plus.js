@@ -334,11 +334,11 @@ ko.extenders.editable = function(observable) {
 		function sortFunction(a, b) {
 			var descending = target.sortDescending();
 
-			if (a === null) { return b === null ? 0 : descending ? 1 : -1; }
-			if (b === null) { return descending ? -1 : 1; }
-			
 			var aValue = target.sortKey() ? unwrapPath(a, target.sortKey()) : a;
 			var bValue = target.sortKey() ? unwrapPath(b, target.sortKey()) : b;
+
+			if (aValue === null) { return bValue === null ? 0 : descending ? 1 : -1; }
+			if (bValue === null) { return descending ? -1 : 1; }
 
 			if (aValue < bValue) { return descending ? 1 : -1; }
 			if (aValue > bValue) { return descending ? -1 : 1; }

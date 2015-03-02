@@ -43,6 +43,23 @@
 		], 'should have sorted by id');
 	});
 
+	test('sorts null string keys to top', function() {
+		var source = ko.observableArray([
+			{ id: 'a' },
+			{ id: null },
+			{ id: 'b' },
+			{ id: null }
+		]).extend({
+			sortable: {
+				key: 'id'
+			}
+		});
+
+		deepEqual(source().map(function(s) { return s.id; }), [
+			null, null, 'a', 'b'
+		], 'should have sorted null values to the top');
+	});
+
 	test('sort key is exposed and can be updated', function() {
 		var source = ko.observableArray([
 			{ id: 4, name: 'C' },
