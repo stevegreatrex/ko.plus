@@ -139,12 +139,16 @@ ko.command = function (options) {
 ko.bindingHandlers.command = {
 	init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 		var command = ko.unwrap(valueAccessor());
-		ko.bindingHandlers.loadingWhen.init.call(this, element, command.isRunning, allBindingsAccessor);
+		if (!allBindingsAccessor.get("suppressLoadingWhen")) {
+			ko.bindingHandlers.loadingWhen.init.call(this, element, command.isRunning, allBindingsAccessor);
+		}
 		ko.bindingHandlers.click.init.call(this, element, ko.observable(command), allBindingsAccessor, viewModel, bindingContext);
 	},
 	update: function (element, valueAccessor, allBindingsAccessor) {
 		var command = ko.unwrap(valueAccessor());
-		ko.bindingHandlers.loadingWhen.update.call(this, element, command.isRunning, allBindingsAccessor);
+		if (!allBindingsAccessor.get("suppressLoadingWhen")) {
+			ko.bindingHandlers.loadingWhen.update.call(this, element, command.isRunning, allBindingsAccessor);
+		}
 		ko.bindingHandlers.enable.update.call(this, element, command.canExecute, allBindingsAccessor);
 	}
 };
