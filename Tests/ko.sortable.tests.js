@@ -260,6 +260,24 @@
 		], 'Strings should be sorted correctly');
 	});
 
+	test('can sort on strings ignoring case', function () {
+		var source = ko.observableArray([
+			'AA',
+			'ba',
+			'b',
+			'AB',
+			'a'
+		]).extend({ sortable: true });
+
+		deepEqual(source(), [
+			'a',
+			'AA',
+			'AB',
+			'b',
+			'ba'
+		], 'Strings should be sorted correctly');
+	});
+
 	test('treats null nested properties as null', function() {
 		var source = ko.observableArray([
 			{ id: 4 },

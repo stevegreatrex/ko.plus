@@ -340,6 +340,9 @@ ko.extenders.editable = function(observable) {
 			if (aValue === null) { return bValue === null ? 0 : descending ? 1 : -1; }
 			if (bValue === null) { return descending ? -1 : 1; }
 
+			if (typeof aValue === 'string') { aValue = aValue.toLowerCase(); }
+			if (typeof bValue === 'string') { bValue = bValue.toLowerCase(); }
+
 			if (aValue < bValue) { return descending ? 1 : -1; }
 			if (aValue > bValue) { return descending ? -1 : 1; }
 
