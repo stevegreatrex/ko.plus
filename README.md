@@ -9,6 +9,10 @@ Get the ko.plus package [from NuGet](http://www.nuget.org/packages/ko.plus).
 
     Install-Package ko.plus
 
+You can also user [bower](http://bower.io/search)
+
+    bower install ko.plus
+
 ## ko.command
 
 ko.command creates a representation of a command that exposes `isRunning`, `failed` and other observable properties to allow binding to command state.
