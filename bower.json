@@ -7,7 +7,7 @@
   ],
   "dependencies": {
     "jquery": ">=1.9.1",
-    "knockout": ">=3.0.0"
+    "knockoutjs": ">=3.0.0"
   },
   "ignore": [
     "**/.*",
