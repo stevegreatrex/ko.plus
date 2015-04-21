@@ -42,7 +42,10 @@ ko.command = function (options) {
 	var callbacks = {
 		done: [],
 		fail: [function () { failed(true); }],
-		always: [function () { isRunning(false); }]
+		always: [
+			function () { isRunning(false); },
+			function() { completed(true); }
+		]
 	};
 
 	//execute function (and return object
@@ -64,7 +67,7 @@ ko.command = function (options) {
 			promise = options.action.apply(options.context || this, arguments);
 
 			//if the returned result is *not* a promise, create a new one that is already resolved
-			if (!promise || !promise.done || !promise.always || !promise.fail) {
+			if (!isPromise(promise)) {
 				promise = instantDeferred(true, promise, options.context || this).promise();
 			}
 
@@ -73,10 +76,15 @@ ko.command = function (options) {
 		}
 
 		//set up our callbacks
-		promise
-			.always(callbacks.always, function () { completed(true); })
-			.fail(callbacks.fail)
-			.done(callbacks.done);
+		callbacks.always.forEach(function(callback) {
+			promise.then(callback, callback);
+		});
+		callbacks.fail.forEach(function(callback) {
+			promise.then(null, callback);
+		});
+		callbacks.done.forEach(function(callback) {
+			promise.then(callback);
+		});
 
 		return promise;
 	};
@@ -175,6 +183,10 @@ function instantDeferred(resolve, returnValue, context) {
 	}
 
 	return deferred;
+}
+
+function isPromise(promise) {
+	return promise && promise.then;
 }
 ;/*global ko:false*/
 
@@ -438,37 +450,35 @@ ko.extenders.editable = function(observable) {
  * (or a default of .loader-dark)
  */
 ko.bindingHandlers.loadingWhen = {
-    init: function (element, valueAccessor, allBindingsAccessor) {
-        var $element = $(element);
-        var currentPosition = $element.css('position');
-        var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || $element.attr('data-loader-class') || 'loader-white';
-        var $loader = $('<span>', { 'class': loaderClass }).addClass('loader').hide();
+	init: function (element, valueAccessor, allBindingsAccessor) {
+		var $element = $(element);
+		var currentPosition = $element.css('position');
+		var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || $element.attr('data-loader-class') || 'loader-white';
+		var $loader = $('<span>', { 'class': loaderClass }).addClass('loader').hide();
 
-        //add the loader
-        $element.append($loader);
+		//add the loader
+		$element.append($loader);
 
-        //make sure that we can absolutely position the loader against the original element
-        if (currentPosition === 'auto' || currentPosition === 'static') {
-            $element.css('position', 'relative');
-        }
+		//make sure that we can absolutely position the loader against the original element
+		if (currentPosition === 'auto' || currentPosition === 'static') {
+			$element.css('position', 'relative');
+		}
+	},
+	update: function (element, valueAccessor) {
+		var isLoading = ko.unwrap(valueAccessor());
+		var $element = $(element);
+		var $childrenToHide = $element.children(':not(span.loader)');
+		var $loader = $element.find('span.loader');
 
-
-    },
-    update: function (element, valueAccessor) {
-        var isLoading = ko.unwrap(valueAccessor());
-        var $element = $(element);
-        var $childrenToHide = $element.children(':not(span.loader)');
-        var $loader = $element.find('span.loader');
-
-        if (isLoading) {
-            $childrenToHide.css('visibility', 'hidden').attr('disabled', 'disabled');
-            $loader.stop(true, true).show();
-        }
-        else {
-            $loader.fadeOut('fast');
-            $childrenToHide.css('visibility', 'visible').removeAttr('disabled');
-        }
-    }
+		if (isLoading) {
+			$childrenToHide.css('visibility', 'hidden').attr('disabled', 'disabled');
+			$loader.stop(true, true).show();
+		}
+		else {
+			$loader.fadeOut('fast');
+			$childrenToHide.css('visibility', 'visible').removeAttr('disabled');
+		}
+	}
 };
 ;return ko;
 }));

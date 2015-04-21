@@ -7,35 +7,33 @@
  * (or a default of .loader-dark)
  */
 ko.bindingHandlers.loadingWhen = {
-    init: function (element, valueAccessor, allBindingsAccessor) {
-        var $element = $(element);
-        var currentPosition = $element.css('position');
-        var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || $element.attr('data-loader-class') || 'loader-white';
-        var $loader = $('<span>', { 'class': loaderClass }).addClass('loader').hide();
+	init: function (element, valueAccessor, allBindingsAccessor) {
+		var $element = $(element);
+		var currentPosition = $element.css('position');
+		var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || $element.attr('data-loader-class') || 'loader-white';
+		var $loader = $('<span>', { 'class': loaderClass }).addClass('loader').hide();
 
-        //add the loader
-        $element.append($loader);
+		//add the loader
+		$element.append($loader);
 
-        //make sure that we can absolutely position the loader against the original element
-        if (currentPosition === 'auto' || currentPosition === 'static') {
-            $element.css('position', 'relative');
-        }
+		//make sure that we can absolutely position the loader against the original element
+		if (currentPosition === 'auto' || currentPosition === 'static') {
+			$element.css('position', 'relative');
+		}
+	},
+	update: function (element, valueAccessor) {
+		var isLoading = ko.unwrap(valueAccessor());
+		var $element = $(element);
+		var $childrenToHide = $element.children(':not(span.loader)');
+		var $loader = $element.find('span.loader');
 
-
-    },
-    update: function (element, valueAccessor) {
-        var isLoading = ko.unwrap(valueAccessor());
-        var $element = $(element);
-        var $childrenToHide = $element.children(':not(span.loader)');
-        var $loader = $element.find('span.loader');
-
-        if (isLoading) {
-            $childrenToHide.css('visibility', 'hidden').attr('disabled', 'disabled');
-            $loader.stop(true, true).show();
-        }
-        else {
-            $loader.fadeOut('fast');
-            $childrenToHide.css('visibility', 'visible').removeAttr('disabled');
-        }
-    }
+		if (isLoading) {
+			$childrenToHide.css('visibility', 'hidden').attr('disabled', 'disabled');
+			$loader.stop(true, true).show();
+		}
+		else {
+			$loader.fadeOut('fast');
+			$childrenToHide.css('visibility', 'visible').removeAttr('disabled');
+		}
+	}
 };

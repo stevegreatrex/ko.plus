@@ -662,4 +662,22 @@
 		//check the handler was invoked
 		equal(true, handlerCalled, 'The fail handler should have been called');
 	});
+
+	test('any thenable is treated as a promise', function() {
+		var thenInvoked = false;
+		var thenable = {
+			then: function() {
+				thenInvoked = true;
+				return $.when();
+			}
+		};
+
+		var command = ko.command(function() {
+			return thenable;
+		});
+
+		command();
+
+		ok(thenInvoked, 'The then function should have been invoked');
+	});
 }(jQuery, ko));

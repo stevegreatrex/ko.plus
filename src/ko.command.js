@@ -26,7 +26,10 @@ ko.command = function (options) {
 	var callbacks = {
 		done: [],
 		fail: [function () { failed(true); }],
-		always: [function () { isRunning(false); }]
+		always: [
+			function () { isRunning(false); },
+			function() { completed(true); }
+		]
 	};
 
 	//execute function (and return object
@@ -48,7 +51,7 @@ ko.command = function (options) {
 			promise = options.action.apply(options.context || this, arguments);
 
 			//if the returned result is *not* a promise, create a new one that is already resolved
-			if (!promise || !promise.done || !promise.always || !promise.fail) {
+			if (!isPromise(promise)) {
 				promise = instantDeferred(true, promise, options.context || this).promise();
 			}
 
@@ -57,10 +60,15 @@ ko.command = function (options) {
 		}
 
 		//set up our callbacks
-		promise
-			.always(callbacks.always, function () { completed(true); })
-			.fail(callbacks.fail)
-			.done(callbacks.done);
+		callbacks.always.forEach(function(callback) {
+			promise.then(callback, callback);
+		});
+		callbacks.fail.forEach(function(callback) {
+			promise.then(null, callback);
+		});
+		callbacks.done.forEach(function(callback) {
+			promise.then(callback);
+		});
 
 		return promise;
 	};
@@ -159,4 +167,8 @@ function instantDeferred(resolve, returnValue, context) {
 	}
 
 	return deferred;
+}
+
+function isPromise(promise) {
+	return promise && promise.then;
 }
