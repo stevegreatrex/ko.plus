@@ -94,7 +94,7 @@ var forEachEditableProperty = function (target, action) {
 
 ko.editable.makeEditable = function (target) {
 	if (!target) {
-		throw "Target must be specified";
+		throw 'Target must be specified';
 	}
 
 	target.isEditing = ko.observable(false);

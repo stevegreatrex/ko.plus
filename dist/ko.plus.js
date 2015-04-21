@@ -5,51 +5,48 @@
  *=============================================================================*/
 
 (function (window, undefined) {
-    "use strict";
+    'use strict';
     (function (factory) {
-        if (typeof define === "function" && define.amd) { // AMD
-            define("ko.plus", ["jquery", "knockout"], factory);
+        if (typeof define === 'function' && define.amd) { // AMD
+            define('ko.plus', ['jquery', 'knockout'], factory);
         }
         else {
             factory(window.jQuery, window.ko);
         }
     }(function ($, ko) {
-	"use strict";;/*global jQuery:false, ko:false*/
+	'use strict';;/*global jQuery:false, ko:false*/
 
 /**
-* Creates a new instance of ko.command
-*
-* @constructor
-* @param  options The options object for the command or a commmand function
-* @return A new instance of ko.command
-*/
+ * Creates a new instance of ko.command
+ *
+ * @constructor
+ * @param  options The options object for the command or a commmand function
+ * @return A new instance of ko.command
+ */
 ko.command = function (options) {
 	//allow just a function to be passed in
-	if (typeof options === "function") { options = { action: options }; }
+	if (typeof options === 'function') { options = { action: options }; }
 
 	//check an action was specified
-	if (!options) { throw "No options were specified"; }
-	if (!options.action) { throw "No action was specified in the options"; }
+	if (!options) { throw 'No options were specified'; }
+	if (!options.action) { throw 'No action was specified in the options'; }
 
-	var
-
-	//flag to indicate that the operation is running
-	isRunning = ko.observable(false),
+	var isRunning = ko.observable(false);
 
 	//flag to indicate that the operation failed when last executed
-	failed = ko.observable(),
-	failMessage = ko.observable(""),
-	completed = ko.observable(false),
+	var failed = ko.observable();
+	var failMessage = ko.observable('');
+	var completed = ko.observable(false);
 
 	//record callbacks
-	callbacks = {
+	var callbacks = {
 		done: [],
 		fail: [function () { failed(true); }],
 		always: [function () { isRunning(false); }]
-	},
+	};
 
 	//execute function (and return object
-	execute = function () {
+	var execute = function () {
 		//check if we are able to execute
 		if (!canExecuteWrapper.call(options.context || this)) {
 			//dont attach any global handlers
@@ -59,7 +56,7 @@ ko.command = function (options) {
 		//notify that we are running and clear any existing error message
 		isRunning(true);
 		failed(false);
-		failMessage("");
+		failMessage('');
 
 		//try to invoke the action and get a reference to the deferred object
 		var promise;
@@ -82,31 +79,32 @@ ko.command = function (options) {
 			.done(callbacks.done);
 
 		return promise;
-	},
+	};
 
 	//canExecute flag
-	forceRefreshCanExecute = ko.observable(), //note, this is to allow us to force a re-evaluation of the computed canExecute observable
-	canExecuteWrapper = options.canExecute || function () { return true; },
-	canExecute = ko.computed({
+	var forceRefreshCanExecute = ko.observable(); //note, this is to allow us to force a re-evaluation of the computed canExecute observable
+	var canExecuteWrapper = options.canExecute || function () { return true; };
+	var canExecute = ko.computed({
 		deferEvaluation: true,
 		read: function () {
 			forceRefreshCanExecute(); //just get the value so that we register canExecute with forceRefreshCanExecute
 			return !isRunning() && canExecuteWrapper.call(options.context || this);
 		}
-	}, options.context || this),
+	}, options.context || this);
 
 	//invalidate canExecute
-	canExecuteHasMutated = function () {
+	var canExecuteHasMutated = function () {
 		forceRefreshCanExecute.notifySubscribers();
-	},
+	};
 
 	//function used to append done callbacks
-	done = function (callback) {
+	var done = function (callback) {
 		callbacks.done.push(callback);
 		return execute;
-	},
+	};
+
 	//function used to append failure callbacks
-	fail = function (callback) {
+	var fail = function (callback) {
 		callbacks.fail.push(function () {
 			var result = callback.apply(this, arguments);
 			if (result) {
@@ -114,13 +112,15 @@ ko.command = function (options) {
 			}
 		});
 		return execute;
-	},
+	};
+
 	//function used to append always callbacks
-	always = function (callback) {
+	var always = function (callback) {
 		callbacks.always.push(callback);
 		return execute;
-	},
-	then = function(resolve, reject) {
+	};
+
+	var then = function(resolve, reject) {
 		if (resolve) { callbacks.done.push(resolve); }
 		if (reject) { callbacks.fail.push(reject); }
 
@@ -147,11 +147,11 @@ ko.command = function (options) {
 };
 
 /**
-* Performs the following bindings on the valueAccessor command:
-* - loadingWhen: command.isRunning
-* - click: command
-* - enable: command.canExecute
-*/
+ * Performs the following bindings on the valueAccessor command:
+ * - loadingWhen: command.isRunning
+ * - click: command
+ * - enable: command.canExecute
+ */
 ko.bindingHandlers.command = {
 	init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 		var command = ko.unwrap(valueAccessor());
@@ -164,7 +164,7 @@ ko.bindingHandlers.command = {
 		ko.bindingHandlers.enable.update.call(this, element, command.canExecute, allBindingsAccessor);
 	}
 };
-    
+
 //factory method to create a $.Deferred that is already completed
 function instantDeferred(resolve, returnValue, context) {
 	var deferred = $.Deferred();
@@ -272,7 +272,7 @@ var forEachEditableProperty = function (target, action) {
 
 ko.editable.makeEditable = function (target) {
 	if (!target) {
-		throw "Target must be specified";
+		throw 'Target must be specified';
 	}
 
 	target.isEditing = ko.observable(false);
@@ -432,43 +432,44 @@ ko.extenders.editable = function(observable) {
 ;/*global jQuery:false, ko:false*/
 
 /**
-* loadingWhen replaces the content of a container with a loading spinner
-* when the bound value is truthy.
-* Styling requires the .loader class to be defined for the page as well as the loaderClass property 
-* (or a default of .loader-dark)
-*/
+ * loadingWhen replaces the content of a container with a loading spinner
+ * when the bound value is truthy.
+ * Styling requires the .loader class to be defined for the page as well as the loaderClass property
+ * (or a default of .loader-dark)
+ */
 ko.bindingHandlers.loadingWhen = {
     init: function (element, valueAccessor, allBindingsAccessor) {
-        var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || "loader-white",
-			$element = $(element),
-			currentPosition = $element.css("position"),
-			$loader = $("<span>", { "class": loaderClass }).addClass("loader").hide();
+        var $element = $(element);
+        var currentPosition = $element.css('position');
+        var loaderClass = ko.unwrap(allBindingsAccessor()).loaderClass || $element.attr('data-loader-class') || 'loader-white';
+        var $loader = $('<span>', { 'class': loaderClass }).addClass('loader').hide();
 
         //add the loader
         $element.append($loader);
 
         //make sure that we can absolutely position the loader against the original element
-        if (currentPosition === "auto" || currentPosition === "static") {
-            $element.css("position", "relative");
+        if (currentPosition === 'auto' || currentPosition === 'static') {
+            $element.css('position', 'relative');
         }
 
-           
+
     },
     update: function (element, valueAccessor) {
-        var isLoading = ko.unwrap(valueAccessor()),
-			$element = $(element),
-			$childrenToHide = $element.children(":not(span.loader)"),
-			$loader = $element.find("span.loader");
+        var isLoading = ko.unwrap(valueAccessor());
+        var $element = $(element);
+        var $childrenToHide = $element.children(':not(span.loader)');
+        var $loader = $element.find('span.loader');
 
         if (isLoading) {
-            $childrenToHide.css("visibility", "hidden").attr("disabled", "disabled");
+            $childrenToHide.css('visibility', 'hidden').attr('disabled', 'disabled');
             $loader.stop(true, true).show();
         }
         else {
-            $loader.fadeOut("fast");
-            $childrenToHide.css("visibility", "visible").removeAttr("disabled");
+            $loader.fadeOut('fast');
+            $childrenToHide.css('visibility', 'visible').removeAttr('disabled');
         }
     }
 };
-;}));
+;return ko;
+}));
 }(window));

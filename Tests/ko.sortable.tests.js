@@ -3,7 +3,7 @@
 (function ($, ko) {
 	'use strict';
 
-	module("ko.sortable Tests");
+	module('ko.sortable Tests');
 
 	test('defaults to basic sort', function() {
 		var source = ko.observableArray([2,3,1]);
