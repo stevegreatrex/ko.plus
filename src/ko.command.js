@@ -32,6 +32,12 @@ ko.command = function (options) {
 		]
 	};
 
+	var reset = function () {
+	    isRunning(false);
+	    failed(false);
+	    failMessage('');
+	};
+
 	//execute function (and return object
 	var execute = function () {
 		//check if we are able to execute
@@ -134,6 +140,7 @@ ko.command = function (options) {
 	execute.always = always;
 	execute.failed = failed;
 	execute.completed = completed;
+	execute.reset = reset;
 
 	return execute;
 };
