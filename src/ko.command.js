@@ -33,9 +33,9 @@ ko.command = function (options) {
 	};
 
 	var reset = function () {
-	    isRunning(false);
-	    failed(false);
-	    failMessage('');
+		isRunning(false);
+		failed(false);
+		failMessage('');
 	};
 
 	//execute function (and return object
