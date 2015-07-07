@@ -680,4 +680,35 @@
 
 		ok(thenInvoked, 'The then function should have been invoked');
 	});
+
+	test('reset returns status flags to original value', function () {
+		var command = ko.command({
+			action: function () {
+				throw 'test error';
+			}
+		})
+		.fail(function () {
+			return 'this is a test';
+		});
+
+		// pre-checks
+		equal(false, command.isRunning());
+
+		//execute the command
+		var result = command();
+
+		// post-checks
+		equal(false, command.isRunning());
+		equal(true, command.failed());
+		equal('this is a test', command.failMessage());
+
+		// reset
+		command.reset();
+
+		// checks after reset
+		equal(false, command.isRunning());
+		equal(false, command.failed());
+		equal('', command.failMessage());
+	});
+
 }(jQuery, ko));
