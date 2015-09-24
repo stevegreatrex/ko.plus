@@ -1,6 +1,6 @@
 /*global ko: false, module: false, test: false, raises: false, equal: false, ok: false, deepEqual: false*/
 
-(function ($, ko) {
+(function ($, ko, undefined) {
 	'use strict';
 
 	module('ko.sortable Tests');
@@ -314,11 +314,11 @@
         { id: 5, nested: { name: '123' } }
         ]).extend({ sortable: { key: 'nested.name', sortNullsToBottom: true }  });
 
-        deepEqual(source().map(function(s) { return s.id }), [5, 1, 3, 6, 2]);
+        deepEqual(source().map(function(s) { return s.id; }), [5, 1, 3, 6, 2]);
         
         source.sortDescending(true);
 
-        deepEqual(source().map(function(s) { return s.id }), [3, 1, 5, 6, 2]);
+        deepEqual(source().map(function(s) { return s.id; }), [3, 1, 5, 6, 2]);
     });
 
 }(jQuery, ko));

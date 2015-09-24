@@ -327,7 +327,7 @@ ko.extenders.editable = function(observable) {
 	return toEditable(observable);
 };;/*global jQuery:false, ko:false*/
 
-(function ($, ko) {
+(function ($, ko, undefined) {
 	'use strict';
 
 	ko.extenders.sortable = function(target, options) {
@@ -356,8 +356,8 @@ ko.extenders.editable = function(observable) {
 			var aValue = target.sortKey() ? unwrapPath(a, target.sortKey()) : a;
 			var bValue = target.sortKey() ? unwrapPath(b, target.sortKey()) : b;
 
-			if (aValue == null) { return bValue == null ? 0 : options.sortNullsToBottom || descending ? 1 : -1; }
-			if (bValue == null) { return options.sortNullsToBottom || descending ? -1 : 1; }
+			if (aValue === null || aValue === undefined) { return bValue === null || bValue === undefined ? 0 : options.sortNullsToBottom || descending ? 1 : -1; }
+			if (bValue === null || bValue === undefined) { return options.sortNullsToBottom || descending ? -1 : 1; }
 
 			if (typeof aValue === 'string') { aValue = aValue.toLowerCase(); }
 			if (typeof bValue === 'string') { bValue = bValue.toLowerCase(); }
