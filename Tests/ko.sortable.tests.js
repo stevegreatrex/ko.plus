@@ -296,29 +296,63 @@
 	});
 
 	test('undefined values are sorted to the bottom', function () {
-        var source = ko.observableArray([, '4', '1', '5', , '7', '3']).extend({ sortable: true });
+		var source = ko.observableArray([, '4', '1', '5', , '7', '3']).extend({ sortable: true });
 
-        deepEqual(source(), ['1', '3', '4', '5', '7', undefined, undefined]);
+		deepEqual(source(), ['1', '3', '4', '5', '7', undefined, undefined]);
 
-        source.sortDescending(true);
+		source.sortDescending(true);
 
-        deepEqual(source(), ['7', '5', '4', '3', '1', undefined, undefined]);
-    });
+		deepEqual(source(), ['7', '5', '4', '3', '1', undefined, undefined]);
+	});
 
 	test('null nested values are sorted to the bottom when sortNullsToBottom is specified', function () {
-        var source = ko.observableArray([
-        { id: 3, nested: { name: 'bcd' } },
-        { id: 1, nested: { name: 'abc' } },
-        { id: 6 },
-        { id: 2, nested: { } },
-        { id: 5, nested: { name: '123' } }
-        ]).extend({ sortable: { key: 'nested.name', sortNullsToBottom: true }  });
+		var source = ko.observableArray([
+		{ id: 3, nested: { name: 'bcd' } },
+		{ id: 1, nested: { name: 'abc' } },
+		{ id: 6 },
+		{ id: 2, nested: { } },
+		{ id: 5, nested: { name: '123' } }
+		]).extend({ sortable: { key: 'nested.name', sortNullsToBottom: true }  });
 
-        deepEqual(source().map(function(s) { return s.id; }), [5, 1, 3, 6, 2]);
+		deepEqual(source().map(function(s) { return s.id; }), [5, 1, 3, 6, 2]);
         
-        source.sortDescending(true);
+		source.sortDescending(true);
 
-        deepEqual(source().map(function(s) { return s.id; }), [3, 1, 5, 6, 2]);
-    });
+		deepEqual(source().map(function(s) { return s.id; }), [3, 1, 5, 6, 2]);
+	});
+
+	test('can sort by multiple keys', function () {
+		var source = ko.observableArray([
+			{ id: 4, nested: { value: 1 } },
+			{ id: 3, nested: { name: 'bcd' } },
+			{ id: 1, nested: { name: 'abc', value: 2 } },
+			{ id: 6 },
+			{ id: 5, nested: { name: 'abc', value: 1 } },
+			{ id: 2, nested: { name: 'abc' } }
+		]).extend({ sortable: { key: 'nested.name, nested.value' } });
+
+		deepEqual(source().map(function (s) { return s.id; }), [6, 4, 2, 5, 1, 3]);
+
+		source.sortDescending(true);
+
+		deepEqual(source().map(function (s) { return s.id; }), [3, 1, 5, 2, 4, 6]);
+	});
+
+	test('can sort by multiple keys with nulls at bottom', function () {
+		var source = ko.observableArray([
+			{ id: 4, nested: { value: 1 } },
+			{ id: 3, nested: { name: 'bcd' } },
+			{ id: 1, nested: { name: 'abc', value: 2 } },
+			{ id: 6 },
+			{ id: 5, nested: { name: 'abc', value: 1 } },
+			{ id: 2, nested: { name: 'abc' } }
+		]).extend({ sortable: { key: 'nested.name, nested.value', sortNullsToBottom: true } });
+
+		deepEqual(source().map(function (s) { return s.id; }), [5, 1, 2, 3, 4, 6]);
+
+		source.sortDescending(true);
+
+		deepEqual(source().map(function (s) { return s.id; }), [3, 1, 5, 2, 4, 6]);
+	});
 
 }(jQuery, ko));
