@@ -6,12 +6,16 @@ function toEditable(observable, getRollbackValue) {
 
 	getRollbackValue = getRollbackValue || function (observable) { return observable(); };
 
+	function canEdit() {
+		return !observable.isEditing() && (!observable.isEditable || ko.unwrap(observable.isEditable()));
+	}
+
 	//a flag to indicate if the field is being edited
 	observable.isEditing = ko.observable(false);
 
 	//start an edit
 	observable.beginEdit = function () {
-		if (observable.isEditing()) { return; }
+		if (!canEdit()) { return; }
 		cancelledValue = undefined;
 
 		rollbackValues.push(getRollbackValue(observable));
