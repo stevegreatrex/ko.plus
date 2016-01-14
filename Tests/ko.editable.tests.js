@@ -465,4 +465,16 @@
 		ok(target.beginEdit, 'Target should have been made editable');
 		ok(target.cancelEdit, 'Target should have been made editable');
 	});
+
+	test('isEditable is respected on individual observables', function () {
+		var target = ko.editable();
+
+		target.isEditable = ko.observable(false);
+		target.beginEdit();
+		ok(!target.isEditing(), 'Should not start editing');
+
+		target.isEditable(true);
+		target.beginEdit();
+		ok(target.isEditing(), 'Should now start editing');
+	});
 }(jQuery, ko));
