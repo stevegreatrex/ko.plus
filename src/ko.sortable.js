@@ -26,8 +26,19 @@
 		function sortFunction(a, b) {
 			var descending = target.sortDescending();
 
-			var aValue = target.sortKey() ? unwrapPath(a, target.sortKey()) : a;
-			var bValue = target.sortKey() ? unwrapPath(b, target.sortKey()) : b;
+			var sortKeys = (target.sortKey() || '').split(',');
+			
+			var result = 0;
+			sortKeys.forEach(function (key) {
+				result = result || sortByKey(a, b, key.trim(), descending);
+			});
+
+			return result;
+		}
+
+		function sortByKey(a, b, key, descending) {
+			var aValue = key ? unwrapPath(a, key) : a;
+			var bValue = key ? unwrapPath(b, key) : b;
 
 			if (aValue === null || aValue === undefined) { return bValue === null || bValue === undefined ? 0 : options.sortNullsToBottom || descending ? 1 : -1; }
 			if (bValue === null || bValue === undefined) { return options.sortNullsToBottom || descending ? -1 : 1; }
@@ -39,6 +50,7 @@
 			if (aValue > bValue) { return descending ? -1 : 1; }
 
 			return 0;
+			
 		}
 
 		target.sortKey        = ko.observable(options.key);
