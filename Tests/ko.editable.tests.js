@@ -477,4 +477,88 @@
 		target.beginEdit();
 		ok(target.isEditing(), 'Should now start editing');
 	});
+
+	test('isDirty computed respects value changes for scalar values', function () {
+		var target = ko.editable();
+		ok(!target.isDirty(), 'isDirty should initially be false');
+
+		target('initial value');
+		ok(!target.isDirty(), 'isDirty should be false when value changes if not editing');
+
+		target.beginEdit();
+		ok(!target.isDirty(), 'isDirty should be false when editing unless value changes');
+
+		target('new value');
+		ok(target.isDirty(), 'isDirty should be true when the value changes');
+
+		target('new value 2');
+		ok(target.isDirty(), 'isDirty should be true when the value changes');
+
+		target('new value');
+		ok(target.isDirty(), 'isDirty should be true when the value changes');
+
+		target('initial value');
+		ok(!target.isDirty(), 'isDirty should only be true when the value != original value');
+
+		target('new value');
+		target.endEdit();
+		ok(!target.isDirty(), 'isDirty should be false when the value is committed');
+
+		target.beginEdit();
+		target('new value 2');
+		target.cancelEdit();
+		ok(!target.isDirty(), 'isDirty should be false when the edit is cancelled');
+	});
+
+	test('isDirty computed respects value changes for complex values', function () {
+		var target = ko.editable();
+		target({ value: 'initial value' });
+		ok(!target.isDirty(), 'isDirty should be false when value changes if not editing');
+
+		target.beginEdit();
+		ok(!target.isDirty(), 'isDirty should be false when editing unless value changes');
+
+		target({ value: 'new value' });
+		ok(target.isDirty(), 'isDirty should be true when the value changes');
+
+		target({ value: 'new value 2' });
+		ok(target.isDirty(), 'isDirty should be true when the value changes');
+
+		target({ value: 'new value' });
+		ok(target.isDirty(), 'isDirty should be true when the value changes');
+
+		target({ value: 'initial value' });
+		ok(!target.isDirty(), 'isDirty should only be true when the value != original value');
+
+		target({ value: 'new value' });
+		target.endEdit();
+		ok(!target.isDirty(), 'isDirty should be false when the value is committed');
+
+		target.beginEdit();
+		target({ value: 'new value 2' });
+		target.cancelEdit();
+		ok(!target.isDirty(), 'isDirty should be false when the edit is cancelled');
+	});
+
+	test('isDirty computed on editable objects respects child value changes', function () {
+		var target = ko.editable.makeEditable({
+			scalar: ko.editable('initial value'),
+			array: ko.editableArray([1, 2])
+		});
+
+		ok(!target.isDirty(), 'no child elements have changed');
+
+		target.beginEdit();
+		ok(!target.isDirty(), 'no child elements have changed');
+
+		target.scalar('new value');
+		ok(target.isDirty(), 'child value has changed');
+
+		target.scalar('initial value');
+		target.array([1, 2, 3]);
+		ok(target.isDirty(), 'child value has changed');
+
+		target.array([1, 2]);
+		ok(!target.isDirty(), 'no child elements have changed');
+	});
 }(jQuery, ko));
