@@ -256,6 +256,11 @@ function toEditable(observable, getRollbackValue) {
 		}
 	};
 
+	observable.isDirty = ko.computed(function () {
+		return observable.isEditing() &&
+			JSON.stringify(rollbackValues[rollbackValues.length-1]) !== JSON.stringify(ko.unwrap(observable));
+	});
+
 	return observable;
 }
 
@@ -325,6 +330,16 @@ ko.editable.makeEditable = function (target) {
 		forEachEditableProperty(target, function (prop) { prop.undoCancel(); });
 		target.beginEdit();
 	};
+
+	target.isDirty = ko.computed(function () {
+		var isDirty = false;
+		forEachEditableProperty(target, function (property) {
+			isDirty = ko.unwrap(property.isDirty) || isDirty;
+		});
+		return isDirty;
+	});
+
+	return target;
 };
 
 ko.extenders.editable = function(observable) {
