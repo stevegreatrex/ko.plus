@@ -559,6 +559,6 @@
 		ok(target.isDirty(), 'child value has changed');
 
 		target.array([1, 2]);
-		ok(!target.isDirty(), 'no child elemetns have changed');
+		ok(!target.isDirty(), 'no child elements have changed');
 	});
 }(jQuery, ko));
