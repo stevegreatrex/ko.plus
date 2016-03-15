@@ -13,5 +13,12 @@
   },
   "scripts": {
     "test": "grunt test --verbose"
+  },
+  "main": "dist/ko.plus",
+  "jspm": {
+    "main": "dist/ko.plus",
+    "dependencies": {
+      "knockout": "github:knockout/knockout@^3.3.0"
+    }
   }
 }
