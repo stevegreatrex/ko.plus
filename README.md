@@ -13,6 +13,10 @@ You can also user [bower](http://bower.io/search)
 
     bower install ko.plus
 
+..and [NPM](https://www.npmjs.com/package/ko.plus)
+
+    npm install ko.plus
+
 ## ko.command
 
 ko.command creates a representation of a command that exposes `isRunning`, `failed` and other observable properties to allow binding to command state.

@@ -1,5 +1,7 @@
 {
   "name": "ko.plus",
+  "description": "Awesome extensions to KnockoutJS",
+  "homepage": "https://github.com/stevegreatrex/ko.plus",
   "version": "0.0.27",
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -20,5 +22,12 @@
     "dependencies": {
       "knockout": "github:knockout/knockout@^3.3.0"
     }
+  },
+  "author": {
+	"name": "Steve Greatrex"
+  },
+  "repository": {
+	  "type": "git",
+	  "url": "https://github.com/stevegreatrex/ko.plus"
   }
 }
