@@ -193,3 +193,4 @@ vwd.webinfo
 # =========================
 
 bower_components
+.vs/config/applicationhost.config

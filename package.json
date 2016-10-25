@@ -2,7 +2,7 @@
   "name": "ko.plus",
   "description": "Awesome extensions to KnockoutJS",
   "homepage": "https://github.com/stevegreatrex/ko.plus",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9",
