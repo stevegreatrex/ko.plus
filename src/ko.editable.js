@@ -83,6 +83,7 @@ var ignoredProperties = {
 	cancelEdit: true,
 	undoCancel: true,
 	endEdit: true,
+	rollback: true,
 	isEditing: true
 };
 
@@ -101,7 +102,7 @@ var forEachEditableProperty = function (target, action) {
 		var unwrappedValue = ko.unwrap(value);
 
 		//editables in arrays
-		if (unwrappedValue && unwrappedValue.length) {
+		if (unwrappedValue && unwrappedValue.length && typeof unwrappedValue !== 'string') {
 			for (var i = 0; i < unwrappedValue.length; i++) {
 				if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
 					action(unwrappedValue[i]);
