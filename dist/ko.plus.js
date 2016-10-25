@@ -274,24 +274,34 @@ ko.editableArray = function (initial) {
 	});
 };
 
+var ignoredProperties = {
+	isDirty: true,
+	beginEdit: true,
+	cancelEdit: true,
+	undoCancel: true,
+	endEdit: true,
+	isEditing: true
+};
+
 var forEachEditableProperty = function (target, action) {
 	for (var prop in target) {
-		if (target.hasOwnProperty(prop)) {
-			var value = target[prop];
+		if (!target.hasOwnProperty(prop) || ignoredProperties[prop]) {
+			continue;
+		}
+		var value = target[prop];
 
-			//direct editables
-			if (value && value.isEditing) {
-				action(value);
-			}
+		//direct editables
+		if (value && value.isEditing) {
+			action(value);
+		}
 
-			var unwrappedValue = ko.unwrap(value);
+		var unwrappedValue = ko.unwrap(value);
 
-			//editables in arrays
-			if (unwrappedValue && unwrappedValue.length) {
-				for (var i = 0; i < unwrappedValue.length; i++) {
-					if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
-						action(unwrappedValue[i]);
-					}
+		//editables in arrays
+		if (unwrappedValue && unwrappedValue.length) {
+			for (var i = 0; i < unwrappedValue.length; i++) {
+				if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
+					action(unwrappedValue[i]);
 				}
 			}
 		}
