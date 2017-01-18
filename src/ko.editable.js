@@ -62,7 +62,7 @@ function toEditable(observable, getRollbackValue) {
 	observable.isDirty = ko.computed(function () {
 		return observable.isEditing() &&
 			JSON.stringify(rollbackValues[rollbackValues.length-1]) !== JSON.stringify(ko.unwrap(observable));
-	});
+	}).extend({ throttle: 1});
 
 	return observable;
 }
@@ -151,7 +151,7 @@ ko.editable.makeEditable = function (target) {
 			isDirty = ko.unwrap(property.isDirty) || isDirty;
 		});
 		return isDirty;
-	});
+	}).extend({ throttle: 1 });
 
 	return target;
 };

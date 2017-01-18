@@ -3,7 +3,15 @@
 (function ($, ko) {
 	'use strict';
 
-	module('ko.editable Tests');
+	var throttle = ko.extenders.throttle;
+	module('ko.editable Tests', {
+		setup: function() {
+			delete ko.extenders.throttle;
+		},
+		teardown: function() {
+			ko.extenders.throttle = throttle;
+		}
+	});
 
 	test('editable creates observable object', function () {
 		var editable = ko.editable();
