@@ -187,3 +187,10 @@ vwd.webinfo
 # =========================
 
 .idea
+
+# =========================
+# bower
+# =========================
+
+bower_components
+.vs/config/applicationhost.config

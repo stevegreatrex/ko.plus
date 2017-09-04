@@ -13,6 +13,10 @@ You can also user [bower](http://bower.io/search)
 
     bower install ko.plus
 
+..and [NPM](https://www.npmjs.com/package/ko.plus)
+
+    npm install ko.plus
+
 ## ko.command
 
 ko.command creates a representation of a command that exposes `isRunning`, `failed` and other observable properties to allow binding to command state.
@@ -281,7 +285,6 @@ Sorting is live (i.e. any changes to the key, direction or source list will resu
 The parameters for the extender accept an optional key and a `descending` flag
 
 
-
 #### key
 The `key` parameter can be left blank (causing the default JS sort to be applied) or can specify a property or property path to be evaluated.
 
@@ -303,6 +306,19 @@ The property path can contain either normal or observable nested parameters.  Fo
  * `name` sorts by the `name` property and reacts to changes
  * `children.length` sorts by the number of items in the `children` collection
  * `nested.nestedProperty` sorts by the nested property value
+
+##### multiple keys
+Multiple sort keys can be specified by setting the `key` property to a comma separated list.  e.g.
+
+```javascript
+ko.observableArray().extend({ 
+  sortable: {
+    key: 'property1, nested.property.two'
+  }
+});
+```
+
+Spaces between items are automatically trimmed.
 
 #### descending
 Determines whether or not the sorting should be reversed

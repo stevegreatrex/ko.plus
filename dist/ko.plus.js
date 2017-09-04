@@ -203,12 +203,16 @@ function toEditable(observable, getRollbackValue) {
 
 	getRollbackValue = getRollbackValue || function (observable) { return observable(); };
 
+	function canEdit() {
+		return !observable.isEditing() && (!observable.isEditable || ko.unwrap(observable.isEditable()));
+	}
+
 	//a flag to indicate if the field is being edited
 	observable.isEditing = ko.observable(false);
 
 	//start an edit
 	observable.beginEdit = function () {
-		if (observable.isEditing()) { return; }
+		if (!canEdit()) { return; }
 		cancelledValue = undefined;
 
 		rollbackValues.push(getRollbackValue(observable));
@@ -252,6 +256,11 @@ function toEditable(observable, getRollbackValue) {
 		}
 	};
 
+	observable.isDirty = ko.computed(function () {
+		return observable.isEditing() &&
+			JSON.stringify(rollbackValues[rollbackValues.length-1]) !== JSON.stringify(ko.unwrap(observable));
+	}).extend({ throttle: 1});
+
 	return observable;
 }
 
@@ -265,24 +274,35 @@ ko.editableArray = function (initial) {
 	});
 };
 
+var ignoredProperties = {
+	isDirty: true,
+	beginEdit: true,
+	cancelEdit: true,
+	undoCancel: true,
+	endEdit: true,
+	rollback: true,
+	isEditing: true
+};
+
 var forEachEditableProperty = function (target, action) {
 	for (var prop in target) {
-		if (target.hasOwnProperty(prop)) {
-			var value = target[prop];
+		if (!target.hasOwnProperty(prop) || ignoredProperties[prop]) {
+			continue;
+		}
+		var value = target[prop];
 
-			//direct editables
-			if (value && value.isEditing) {
-				action(value);
-			}
+		//direct editables
+		if (value && value.isEditing) {
+			action(value);
+		}
 
-			var unwrappedValue = ko.unwrap(value);
+		var unwrappedValue = ko.unwrap(value);
 
-			//editables in arrays
-			if (unwrappedValue && unwrappedValue.length) {
-				for (var i = 0; i < unwrappedValue.length; i++) {
-					if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
-						action(unwrappedValue[i]);
-					}
+		//editables in arrays
+		if (unwrappedValue && unwrappedValue.length && typeof unwrappedValue !== 'string') {
+			for (var i = 0; i < unwrappedValue.length; i++) {
+				if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
+					action(unwrappedValue[i]);
 				}
 			}
 		}
@@ -321,6 +341,16 @@ ko.editable.makeEditable = function (target) {
 		forEachEditableProperty(target, function (prop) { prop.undoCancel(); });
 		target.beginEdit();
 	};
+
+	target.isDirty = ko.computed(function () {
+		var isDirty = false;
+		forEachEditableProperty(target, function (property) {
+			isDirty = ko.unwrap(property.isDirty) || isDirty;
+		});
+		return isDirty;
+	}).extend({ throttle: 1 });
+
+	return target;
 };
 
 ko.extenders.editable = function(observable) {
@@ -353,8 +383,19 @@ ko.extenders.editable = function(observable) {
 		function sortFunction(a, b) {
 			var descending = target.sortDescending();
 
-			var aValue = target.sortKey() ? unwrapPath(a, target.sortKey()) : a;
-			var bValue = target.sortKey() ? unwrapPath(b, target.sortKey()) : b;
+			var sortKeys = (target.sortKey() || '').split(',');
+			
+			var result = 0;
+			sortKeys.forEach(function (key) {
+				result = result || sortByKey(a, b, key.trim(), descending);
+			});
+
+			return result;
+		}
+
+		function sortByKey(a, b, key, descending) {
+			var aValue = key ? unwrapPath(a, key) : a;
+			var bValue = key ? unwrapPath(b, key) : b;
 
 			if (aValue === null || aValue === undefined) { return bValue === null || bValue === undefined ? 0 : options.sortNullsToBottom || descending ? 1 : -1; }
 			if (bValue === null || bValue === undefined) { return options.sortNullsToBottom || descending ? -1 : 1; }
@@ -366,6 +407,7 @@ ko.extenders.editable = function(observable) {
 			if (aValue > bValue) { return descending ? -1 : 1; }
 
 			return 0;
+			
 		}
 
 		target.sortKey        = ko.observable(options.key);

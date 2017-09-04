@@ -6,12 +6,16 @@ function toEditable(observable, getRollbackValue) {
 
 	getRollbackValue = getRollbackValue || function (observable) { return observable(); };
 
+	function canEdit() {
+		return !observable.isEditing() && (!observable.isEditable || ko.unwrap(observable.isEditable()));
+	}
+
 	//a flag to indicate if the field is being edited
 	observable.isEditing = ko.observable(false);
 
 	//start an edit
 	observable.beginEdit = function () {
-		if (observable.isEditing()) { return; }
+		if (!canEdit()) { return; }
 		cancelledValue = undefined;
 
 		rollbackValues.push(getRollbackValue(observable));
@@ -55,6 +59,11 @@ function toEditable(observable, getRollbackValue) {
 		}
 	};
 
+	observable.isDirty = ko.computed(function () {
+		return observable.isEditing() &&
+			JSON.stringify(rollbackValues[rollbackValues.length-1]) !== JSON.stringify(ko.unwrap(observable));
+	}).extend({ throttle: 1});
+
 	return observable;
 }
 
@@ -68,24 +77,35 @@ ko.editableArray = function (initial) {
 	});
 };
 
+var ignoredProperties = {
+	isDirty: true,
+	beginEdit: true,
+	cancelEdit: true,
+	undoCancel: true,
+	endEdit: true,
+	rollback: true,
+	isEditing: true
+};
+
 var forEachEditableProperty = function (target, action) {
 	for (var prop in target) {
-		if (target.hasOwnProperty(prop)) {
-			var value = target[prop];
+		if (!target.hasOwnProperty(prop) || ignoredProperties[prop]) {
+			continue;
+		}
+		var value = target[prop];
 
-			//direct editables
-			if (value && value.isEditing) {
-				action(value);
-			}
+		//direct editables
+		if (value && value.isEditing) {
+			action(value);
+		}
 
-			var unwrappedValue = ko.unwrap(value);
+		var unwrappedValue = ko.unwrap(value);
 
-			//editables in arrays
-			if (unwrappedValue && unwrappedValue.length) {
-				for (var i = 0; i < unwrappedValue.length; i++) {
-					if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
-						action(unwrappedValue[i]);
-					}
+		//editables in arrays
+		if (unwrappedValue && unwrappedValue.length && typeof unwrappedValue !== 'string') {
+			for (var i = 0; i < unwrappedValue.length; i++) {
+				if (unwrappedValue[i] && unwrappedValue[i].isEditing) {
+					action(unwrappedValue[i]);
 				}
 			}
 		}
@@ -124,6 +144,16 @@ ko.editable.makeEditable = function (target) {
 		forEachEditableProperty(target, function (prop) { prop.undoCancel(); });
 		target.beginEdit();
 	};
+
+	target.isDirty = ko.computed(function () {
+		var isDirty = false;
+		forEachEditableProperty(target, function (property) {
+			isDirty = ko.unwrap(property.isDirty) || isDirty;
+		});
+		return isDirty;
+	}).extend({ throttle: 1 });
+
+	return target;
 };
 
 ko.extenders.editable = function(observable) {
