@@ -25,7 +25,7 @@ ko.bindingHandlers.loadingWhen = {
 		var isLoading = ko.unwrap(valueAccessor());
 		var $element = $(element);
 		var $childrenToHide = $element.children(':not(span.loader)');
-		var $loader = $element.find('span.loader');
+		var $loader = $element.children('span.loader');
 
 		if (isLoading) {
 			$childrenToHide.css('visibility', 'hidden').attr('disabled', 'disabled');
