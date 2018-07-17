@@ -489,7 +489,7 @@ ko.extenders.editable = function(observable) {
 		}
 	};
 
-}(jQuery, ko));
+}($, ko));
 ;/*global jQuery:false, ko:false*/
 
 /**
