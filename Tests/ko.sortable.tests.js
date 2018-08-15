@@ -278,6 +278,42 @@
 		], 'Strings should be sorted correctly');
 	});
 
+	test('can sort on strings with locale', function () {
+		var source = ko.observableArray([
+			'å',
+			'AA',
+			'æ',
+			'ba',
+			'ø'
+		]).extend({ sortable: { locale: 'no' } });
+
+		deepEqual(source(), [
+			'AA',
+			'ba',
+			'æ',
+			'ø',
+			'å'
+		], 'Strings should be sorted correctly');
+	});
+
+	test('can sort on strings with locale ignoring case', function () {
+		var source = ko.observableArray([
+			'a',
+			'Ø',
+			'æ',
+			'å',
+			'AA'
+		]).extend({ sortable: { locale: 'no' } });
+
+		deepEqual(source(), [
+			'a',
+			'AA',
+			'æ',
+			'Ø',
+			'å'
+		], 'Strings should be sorted correctly');
+	});
+
 	test('treats null nested properties as null', function() {
 		var source = ko.observableArray([
 			{ id: 4 },

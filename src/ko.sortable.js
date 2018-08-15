@@ -46,6 +46,8 @@
 			if (typeof aValue === 'string') { aValue = aValue.toLowerCase(); }
 			if (typeof bValue === 'string') { bValue = bValue.toLowerCase(); }
 
+			if (options.locale && typeof aValue === 'string' && typeof bValue === 'string') { return descending ? bValue.localeCompare(aValue, options.locale) : aValue.localeCompare(bValue, options.locale); }
+
 			if (aValue < bValue) { return descending ? 1 : -1; }
 			if (aValue > bValue) { return descending ? -1 : 1; }
 
