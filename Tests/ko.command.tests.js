@@ -1,29 +1,29 @@
 ﻿/*global ko: false, jQuery: false, module: false, test: false, raises: false, equal: false, ok: false*/
 
 
-(function ($, ko) {
+define(['qunit'], function(QUnit) {
 	'use strict';
 
-	module('ko.command Tests');
+	QUnit.module('ko.command Tests');
 
-	test('throws when null options are specified', function () {
-		raises(function () {
+	QUnit.test('throws when null options are specified', function (assert) {
+		assert.raises(function () {
 			ko.command();
 		}, /No options were specified/);
 	});
 
-	test('throws when no action is specified', function () {
-		raises(function () {
+	QUnit.test('throws when no action is specified', function (assert) {
+		assert.raises(function () {
 			ko.command({});
 		}, /No action was specified in the options/);
 	});
 
-	test('isRunning initially false', function () {
+	QUnit.test('isRunning initially false', function (assert) {
 		var command = ko.command({ action: {} });
-		equal(false, command.isRunning());
+		assert.equal(false, command.isRunning());
 	});
 
-	test('execute returns a completed deferred if the action does not return a promise', function () {
+	QUnit.test('execute returns a completed deferred if the action does not return a promise', function (assert) {
 		var command = ko.command({
 			action: function () { }
 		});
@@ -32,16 +32,16 @@
 		var result = command();
 
 		//check that the returned item is a completed promise
-		ok(result, 'The result should be a completed promise');
-		ok(result.done, 'The result should be a completed promise');
-		ok(result.fail, 'The result should be a completed promise');
-		ok(result.always, 'The result should be a completed promise');
+		assert.ok(result, 'The result should be a completed promise');
+		assert.ok(result.done, 'The result should be a completed promise');
+		assert.ok(result.fail, 'The result should be a completed promise');
+		assert.ok(result.always, 'The result should be a completed promise');
 
 		//check that we are no longer running
-		equal(command.isRunning(), false, 'The command should not be running');
+		assert.equal(command.isRunning(), false, 'The command should not be running');
 	});
 
-	test('execute resolves completed deferred with original result if result is returned from function', function () {
+	QUnit.test('execute resolves completed deferred with original result if result is returned from function', function (assert) {
 		var doneCalled = false,
 			actionResult = { value: 123 },
 			command = ko.command({
@@ -50,19 +50,19 @@
 
 		//execute the command and check the result
 		command().done(function (result) {
-			equal(result, actionResult, 'The actions result should be passed to the done handler');
+			assert.equal(result, actionResult, 'The actions result should be passed to the done handler');
 			doneCalled = true;
 		});
 
 		//check that the handler was actually called
-		ok(doneCalled, 'The done handler should have been invoked immediately');
+		assert.ok(doneCalled, 'The done handler should have been invoked immediately');
 
 		//check that we are no longer running
-		equal(command.isRunning(), false, 'The command should not be running');
+		assert.equal(command.isRunning(), false, 'The command should not be running');
 	});
 
 
-	test('execute runs fail handlers if the command action throws an error', function () {
+	QUnit.test('execute runs fail handlers if the command action throws an error', function (assert) {
 		var failCalled = false,
 			actionError = 'a random error',
 			command = ko.command({
@@ -71,25 +71,25 @@
 
 		//execute the command and check the result
 		command().fail(function (error) {
-			equal(error, actionError, 'The actions error should be passed to the fail handler');
+			assert.equal(error, actionError, 'The actions error should be passed to the fail handler');
 			failCalled = true;
 		});
 
 		//check that the handler was actually called
-		ok(failCalled, 'The fail handler should have been invoked immediately');
+		assert.ok(failCalled, 'The fail handler should have been invoked immediately');
 
 		//check that we are no longer running
-		equal(command.isRunning(), false, 'The command should not be running');
+		assert.equal(command.isRunning(), false, 'The command should not be running');
 	});
 
-	test('execute is passed correct this and arguments', function () {
+	QUnit.test('execute is passed correct this and arguments', function (assert) {
 		var arg1 = 'one', arg2 = 'two';
 		var outsideContext = this;
 		var command = ko.command({
 			action: function (a1, a2) {
-				equal(this, outsideContext, 'this should be set to the context in which the command is invoked');
-				equal(a1, arg1, 'arguments were not passed in');
-				equal(a2, arg2, 'arguments were not passed in');
+				assert.equal(this, outsideContext, 'this should be set to the context in which the command is invoked');
+				assert.equal(a1, arg1, 'arguments were not passed in');
+				assert.equal(a2, arg2, 'arguments were not passed in');
 				return $.Deferred();
 			},
 			context: this
@@ -99,7 +99,7 @@
 	});
 
 
-	test('execute sets isRunning', function () {
+	QUnit.test('execute sets isRunning', function (assert) {
 		var deferred = $.Deferred();
 		var command = ko.command({
 			action: function () {
@@ -111,16 +111,16 @@
 		command();
 
 		//check that isRunning is true and the error was cleared
-		equal(true, command.isRunning(), 'isRunning should be set');
+		assert.equal(true, command.isRunning(), 'isRunning should be set');
 
 		//complete the async operation
 		deferred.resolve();
 
 		//check is running has been reset
-		equal(false, command.isRunning(), 'isRunning should be reset');
+		assert.equal(false, command.isRunning(), 'isRunning should be reset');
 	});
 
-	test('execute invokes done handlers', function () {
+	QUnit.test('execute invokes done handlers', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -130,7 +130,7 @@
 				return deferred;
 			},
 			done: function (data) {
-				equal(responseData, data, 'The data should be passed to the done handler');
+				assert.equal(responseData, data, 'The data should be passed to the done handler');
 				handlerCalled = true;
 			}
 		});
@@ -142,10 +142,10 @@
 		deferred.resolve(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The done handler should have been called');
+		assert.equal(true, handlerCalled, 'The done handler should have been called');
 	});
 
-	test('execute invokes fail handlers', function () {
+	QUnit.test('execute invokes fail handlers', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -155,7 +155,7 @@
 				return deferred;
 			},
 			fail: function (data) {
-				equal(responseData, data, 'The data should be passed to the fail handler');
+				assert.equal(responseData, data, 'The data should be passed to the fail handler');
 				handlerCalled = true;
 			}
 		});
@@ -167,10 +167,10 @@
 		deferred.reject(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The fail handler should have been called');
+		assert.equal(true, handlerCalled, 'The fail handler should have been called');
 	});
 
-	test('done attaches handler', function () {
+	QUnit.test('done attaches handler', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -181,7 +181,7 @@
 			}
 		})
 			.done(function (data) {
-				equal(responseData, data, 'The data should be passed to the done handler');
+				assert.equal(responseData, data, 'The data should be passed to the done handler');
 				handlerCalled = true;
 			});
 
@@ -192,10 +192,10 @@
 		deferred.resolve(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The done handler should have been called');
+		assert.equal(true, handlerCalled, 'The done handler should have been called');
 	});
 
-	test('fail attaches handler', function () {
+	QUnit.test('fail attaches handler', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -206,7 +206,7 @@
 			}
 		})
 			.fail(function (data) {
-				equal(responseData, data, 'The data should be passed to the fail handler');
+				assert.equal(responseData, data, 'The data should be passed to the fail handler');
 				handlerCalled = true;
 			});
 
@@ -217,10 +217,10 @@
 		deferred.reject(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The fail handler should have been called');
+		assert.equal(true, handlerCalled, 'The fail handler should have been called');
 	});
 
-	test('always handler is invoked on done', function () {
+	QUnit.test('always handler is invoked on done', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -231,7 +231,7 @@
 			}
 		})
 			.always(function (data) {
-				equal(responseData, data, 'The data should be passed to the done handler');
+				assert.equal(responseData, data, 'The data should be passed to the done handler');
 				handlerCalled = true;
 			});
 
@@ -242,10 +242,10 @@
 		deferred.resolve(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The done handler should have been called');
+		assert.equal(true, handlerCalled, 'The done handler should have been called');
 	});
 
-	test('always handler is invoked on fail', function () {
+	QUnit.test('always handler is invoked on fail', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -256,7 +256,7 @@
 			}
 		})
 			.always(function (data) {
-				equal(responseData, data, 'The data should be passed to the fail handler');
+				assert.equal(responseData, data, 'The data should be passed to the fail handler');
 				handlerCalled = true;
 			});
 
@@ -267,10 +267,10 @@
 		deferred.reject(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The fail handler should have been called');
+		assert.equal(true, handlerCalled, 'The fail handler should have been called');
 	});
 
-	test('can specify function as only parameter', function () {
+	QUnit.test('can specify function as only parameter', function (assert) {
 		var deferred = $.Deferred();
 
 		var command = ko.command(function () {
@@ -281,16 +281,16 @@
 		command();
 
 		//check that isRunning is true
-		equal(true, command.isRunning(), 'isRunning should be set');
+		assert.equal(true, command.isRunning(), 'isRunning should be set');
 
 		//complete the async operation
 		deferred.resolve();
 
 		//check is running has been reset
-		equal(false, command.isRunning(), 'isRunning should be reset');
+		assert.equal(false, command.isRunning(), 'isRunning should be reset');
 	});
 
-	test('execute returns promise', function () {
+	QUnit.test('execute returns promise', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -303,7 +303,7 @@
 
 		//execute the command and attach the done handler
 		command().done(function (data) {
-			equal(responseData, data, 'The data should be passed to the done handler');
+			assert.equal(responseData, data, 'The data should be passed to the done handler');
 			handlerCalled = true;
 		});
 
@@ -311,10 +311,10 @@
 		deferred.resolve(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The done handler should have been called');
+		assert.equal(true, handlerCalled, 'The done handler should have been called');
 	});
 
-	test('can use ko.command syntax', function () {
+	QUnit.test('can use ko.command syntax', function (assert) {
 		var deferred1 = $.Deferred(),
 			deferred2 = $.Deferred(),
 			done1 = false,
@@ -327,36 +327,36 @@
 
 		//run one of the commands and check it is the only one running
 		testSubject.command1();
-		equal(testSubject.command1.isRunning(), true, 'First command should be running');
-		equal(testSubject.command2.isRunning(), false, 'Second command should not be running');
+		assert.equal(testSubject.command1.isRunning(), true, 'First command should be running');
+		assert.equal(testSubject.command2.isRunning(), false, 'Second command should not be running');
 
 		//start the second command running
 		testSubject.command2();
-		equal(testSubject.command1.isRunning(), true, 'Both commands should now be running');
-		equal(testSubject.command2.isRunning(), true, 'Both commands should now be running');
+		assert.equal(testSubject.command1.isRunning(), true, 'Both commands should now be running');
+		assert.equal(testSubject.command2.isRunning(), true, 'Both commands should now be running');
 
 		//allow the second command to complete
 		deferred2.resolve();
 
 		//check that only the second command has completed
-		equal(testSubject.command1.isRunning(), true, 'First command should still be running');
-		equal(testSubject.command2.isRunning(), false, 'Second command should have completed');
-		equal(done1, false, 'First command should not have invoked handlers');
-		equal(done2, true, 'Second command should have invoked handlers');
+		assert.equal(testSubject.command1.isRunning(), true, 'First command should still be running');
+		assert.equal(testSubject.command2.isRunning(), false, 'Second command should have completed');
+		assert.equal(done1, false, 'First command should not have invoked handlers');
+		assert.equal(done2, true, 'Second command should have invoked handlers');
 
 		//now let the first command complete and check it's properties
 		deferred1.resolve();
-		equal(testSubject.command1.isRunning(), false, 'First command should now have completed');
-		equal(done1, true, 'First command should have invoked handlers');
+		assert.equal(testSubject.command1.isRunning(), false, 'First command should now have completed');
+		assert.equal(done1, true, 'First command should have invoked handlers');
 	});
 
-	test('canExecute returns true by default', function () {
+	QUnit.test('canExecute returns true by default', function (assert) {
 		var command = ko.command(function () { });
 
-		ok(command.canExecute(), 'canExecute should return true unless something has been specified');
+		assert.ok(command.canExecute(), 'canExecute should return true unless something has been specified');
 	});
 
-	test('canExecute returns false whilst action is running', function () {
+	QUnit.test('canExecute returns false whilst action is running', function (assert) {
 		var deferred = $.Deferred(),
 			command = ko.command(function () { return deferred; });
 
@@ -364,16 +364,16 @@
 		command();
 
 		//check that canExecute is false
-		ok(!command.canExecute(), 'canExecute should return false when the command is running');
+		assert.ok(!command.canExecute(), 'canExecute should return false when the command is running');
 
 		//allow the command to complete
 		deferred.resolve();
 
 		//check that the command can execute again
-		ok(command.canExecute(), 'canExecute should return true once the command completes');
+		assert.ok(command.canExecute(), 'canExecute should return true once the command completes');
 	});
 
-	test('canExecute returns true after action fails', function () {
+	QUnit.test('canExecute returns true after action fails', function (assert) {
 		var deferred = $.Deferred(),
 			command = ko.command(function () { return deferred; });
 
@@ -381,16 +381,16 @@
 		command();
 
 		//check that canExecute is false
-		ok(!command.canExecute(), 'canExecute should return false when the command is running');
+		assert.ok(!command.canExecute(), 'canExecute should return false when the command is running');
 
 		//allow the command to fail
 		deferred.reject();
 
 		//check that the command can execute again
-		ok(command.canExecute(), 'canExecute should return true once the command fails');
+		assert.ok(command.canExecute(), 'canExecute should return true once the command fails');
 	});
 
-	test('canExecute returns false if options-specified item returns false', function () {
+	QUnit.test('canExecute returns false if options-specified item returns false', function (assert) {
 		var actionCanExecute = true,
 			command = ko.command({
 				action: function () { return null; },
@@ -398,30 +398,30 @@
 			});
 
 		//check initially can execute
-		ok(command.canExecute(), 'canExecute should return true when not running and when parameter canExecute is true');
+		assert.ok(command.canExecute(), 'canExecute should return true when not running and when parameter canExecute is true');
 
 		//now set the action's canExecute to false and check we can't execute
 		actionCanExecute = false;
 		command.canExecuteHasMutated();
-		ok(!command.canExecute(), 'canExecute should return false when the parameter canExecute is false');
+		assert.ok(!command.canExecute(), 'canExecute should return false when the parameter canExecute is false');
 
 		//fake a start to the execution and check that canExecute is still false
 		command.isRunning(true);
-		ok(!command.canExecute(), 'canExecute should return false when the command is running');
+		assert.ok(!command.canExecute(), 'canExecute should return false when the command is running');
 
 		//now set the parameter canExecute to true and check canExecute is still false (we are still running)
 		actionCanExecute = true;
 		command.canExecuteHasMutated();
-		ok(!command.canExecute(), 'canExecute should return false when the command is running');
+		assert.ok(!command.canExecute(), 'canExecute should return false when the command is running');
 
 		//fake an end to the running
 		command.isRunning(false);
 
 		//check that the command can execute again
-		ok(command.canExecute(), 'canExecute should return true once the command stops running and the parameter-specified canExecute returns true');
+		assert.ok(command.canExecute(), 'canExecute should return true once the command stops running and the parameter-specified canExecute returns true');
 	});
 
-	test('canExecute is called in the context of the command', function () {
+	QUnit.test('canExecute is called in the context of the command', function (assert) {
 		var canExecuteContext,
 			outsideContext = this,
 			command = ko.command({
@@ -434,10 +434,10 @@
 
 		command.canExecute();
 
-		equal(canExecuteContext, outsideContext, 'canExecute should be called in the context in which the command was executed');
+		assert.equal(canExecuteContext, outsideContext, 'canExecute should be called in the context in which the command was executed');
 	});
 
-	test('execute returns a completed deferred object when canExecute is false', function () {
+	QUnit.test('execute returns a completed deferred object when canExecute is false', function (assert) {
 		var actionCalled = false,
 			doneCalled = false,
 			failCalled = false,
@@ -452,19 +452,19 @@
 			.fail(function () { failCalled = true; });
 
 		//check that neither the done handler nor the action were called
-		ok(!doneCalled, 'The done handler should have been called');
-		ok(failCalled, 'The fail handler should have been called');
-		ok(!command.isRunning(), 'The command should not be running');
-		ok(!actionCalled, 'The action should not have been invoked');
+		assert.ok(!doneCalled, 'The done handler should have been called');
+		assert.ok(failCalled, 'The fail handler should have been called');
+		assert.ok(!command.isRunning(), 'The command should not be running');
+		assert.ok(!actionCalled, 'The action should not have been invoked');
 	});
 
-	test('failed is initially undefined', function () {
+	QUnit.test('failed is initially undefined', function (assert) {
 		var testSubject = ko.command(function () { });
 
-		equal(testSubject.failed(), undefined, 'failed should initially return undefined');
+		assert.equal(testSubject.failed(), undefined, 'failed should initially return undefined');
 	});
 
-	test('failed is set to true when operation fails', function () {
+	QUnit.test('failed is set to true when operation fails', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {};
 
@@ -481,23 +481,23 @@
 		command();
 
 		//check that failed has been reset
-		equal(command.failed(), false, 'failed should have been reset');
+		assert.equal(command.failed(), false, 'failed should have been reset');
 
 		//complete the async operation
 		deferred.reject(responseData);
 
 		//check the flag was set
-		equal(command.failed(), true, 'failed should have been set');
+		assert.equal(command.failed(), true, 'failed should have been set');
 	});
 
-	test('all success functions are run in correct context', function () {
+	QUnit.test('all success functions are run in correct context', function (assert) {
 		var counts = {};
 
 		//helper to create stub functions that check the context and update a count
 		function createStubFunction(name) {
 			counts[name] = 0;
 			return function () {
-				equal(this.id, 123, 'The context of the ' + name + ' function should be the view model');
+				assert.equal(this.id, 123, 'The context of the ' + name + ' function should be the view model');
 				counts[name]++;
 				return true; //only needed for canExecute but doesn't cause problems elsewhere
 			};
@@ -524,19 +524,19 @@
 		var instance = new ViewModel();
 		instance.action();
 
-		equal(counts.execute, 1, 'execute should have been called');
-		equal(counts.done, 1, 'done should have been called');
-		equal(counts.always, 1, 'always should have been called');
-		equal(counts.canExecute, 1, 'canExecute should have been called');
+		assert.equal(counts.execute, 1, 'execute should have been called');
+		assert.equal(counts.done, 1, 'done should have been called');
+		assert.equal(counts.always, 1, 'always should have been called');
+		assert.equal(counts.canExecute, 1, 'canExecute should have been called');
 	});
 
-	test('fail function is run in correct context', function () {
+	QUnit.test('fail function is run in correct context', function (assert) {
 		var counts = {};
 
 		function createStubFunction(name) {
 			counts[name] = 0;
 			return function () {
-				equal(this.id, 123, 'The context of the ' + name + ' function should be the view model');
+				assert.equal(this.id, 123, 'The context of the ' + name + ' function should be the view model');
 				counts[name]++;
 			};
 		}
@@ -557,16 +557,16 @@
 		var instance = new ViewModel();
 		instance.action();
 
-		equal(counts.fail, 1, 'fail should have been called');
-		equal(counts.always, 1, 'always should have been called');
+		assert.equal(counts.fail, 1, 'fail should have been called');
+		assert.equal(counts.always, 1, 'always should have been called');
 	});
 
-	test('failMessage is initially empty', function () {
+	QUnit.test('failMessage is initially empty', function (assert) {
 		var command = ko.command(function() {});
-		equal(command.failMessage(), '', 'failMessage should be blank');
+		assert.equal(command.failMessage(), '', 'failMessage should be blank');
 	});
 
-	test('sets failMessage to the value returned from the fail handler', function () {
+	QUnit.test('sets failMessage to the value returned from the fail handler', function (assert) {
 		var deferred = $.Deferred();
 
 		var command = ko.command(function () {
@@ -583,16 +583,16 @@
 		command();
 
 		//check that failMessage has been reset
-		equal(command.failMessage(), '', 'failMessage should have been reset');
+		assert.equal(command.failMessage(), '', 'failMessage should have been reset');
 
 		//complete the async operation
 		deferred.reject();
 
 		//check the flag was set
-		equal(command.failMessage(), 'new error', 'failMessage should have been set');
+		assert.equal(command.failMessage(), 'new error', 'failMessage should have been set');
 	});
 
-	test('completed is set after command finishes', function () {
+	QUnit.test('completed is set after command finishes', function (assert) {
 		function checkCompletedBehaviour(makeComplete) {
 			var deferred = $.Deferred();
 
@@ -600,20 +600,20 @@
 				return deferred;
 			});
 
-			equal(command.completed(), false, 'completed should be false initially');
+			assert.equal(command.completed(), false, 'completed should be false initially');
 
 			command();
-			equal(command.completed(), false, 'completed should be false until the command has finished');
+			assert.equal(command.completed(), false, 'completed should be false until the command has finished');
 
 			makeComplete(deferred);
-			equal(command.completed(), true, 'completed should be true once the command has finished');
+			assert.equal(command.completed(), true, 'completed should be true once the command has finished');
 		}
 
 		checkCompletedBehaviour(function (deferred) { deferred.resolve(); });
 		checkCompletedBehaviour(function (deferred) { deferred.reject(); });
 	});
 
-	test('then can be used in place of done', function() {
+	QUnit.test('then can be used in place of done', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -624,7 +624,7 @@
 			}
 		})
 			.then(function (data) {
-				equal(responseData, data, 'The data should be passed to the handler');
+				assert.equal(responseData, data, 'The data should be passed to the handler');
 				handlerCalled = true;
 			});
 
@@ -635,10 +635,10 @@
 		deferred.resolve(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The fail handler should have been called');
+		assert.equal(true, handlerCalled, 'The fail handler should have been called');
 	});
 
-	test('then can be used in place of fail', function() {
+	QUnit.test('then can be used in place of fail', function (assert) {
 		var deferred = $.Deferred(),
 			responseData = {},
 			handlerCalled = false;
@@ -649,7 +649,7 @@
 			}
 		})
 			.then(null, function (data) {
-				equal(responseData, data, 'The data should be passed to the fail handler');
+				assert.equal(responseData, data, 'The data should be passed to the fail handler');
 				handlerCalled = true;
 			});
 
@@ -660,10 +660,10 @@
 		deferred.reject(responseData);
 
 		//check the handler was invoked
-		equal(true, handlerCalled, 'The fail handler should have been called');
+		assert.equal(true, handlerCalled, 'The fail handler should have been called');
 	});
 
-	test('any thenable is treated as a promise', function() {
+	QUnit.test('any thenable is treated as a promise', function (assert) {
 		var thenInvoked = false;
 		var thenable = {
 			then: function() {
@@ -678,10 +678,10 @@
 
 		command();
 
-		ok(thenInvoked, 'The then function should have been invoked');
+		assert.ok(thenInvoked, 'The then function should have been invoked');
 	});
 
-	test('reset returns status flags to original value', function () {
+	QUnit.test('reset returns status flags to original value', function (assert) {
 		var command = ko.command({
 			action: function () {
 				throw 'test error';
@@ -692,23 +692,23 @@
 		});
 
 		// pre-checks
-		equal(false, command.isRunning());
+		assert.equal(false, command.isRunning());
 
 		//execute the command
 		var result = command();
 
 		// post-checks
-		equal(false, command.isRunning());
-		equal(true, command.failed());
-		equal('this is a test', command.failMessage());
+		assert.equal(false, command.isRunning());
+		assert.equal(true, command.failed());
+		assert.equal('this is a test', command.failMessage());
 
 		// reset
 		command.reset();
 
 		// checks after reset
-		equal(false, command.isRunning());
-		equal(false, command.failed());
-		equal('', command.failMessage());
+		assert.equal(false, command.isRunning());
+		assert.equal(false, command.failed());
+		assert.equal('', command.failMessage());
 	});
 
-}(jQuery, ko));
+});

@@ -4,13 +4,21 @@
 	'use strict';
 
 	require.config({
+		paths: {
+			'qunit': './qunit-2.6.1'
+		},
 		waitSeconds: 0
 	});
 
+
 	require([
-		'ko.command.tests',
-		'ko.editable.tests',
+		'qunit', 
+		'ko.command.tests', 
+		'ko.editable.tests', 
 		'ko.sortable.tests'
-	], QUnit.start);
+	], function (QUnit, commandtests, editabletests, sortabletests) {
+		QUnit.config.autostart = false;
+		QUnit.start();
+	});
 
 }());

@@ -47,7 +47,13 @@ module.exports = function (grunt) {
 			}
 		},
 		qunit: {
-			files: ["Tests/**/*.html"]
+			files: ["Tests/**/*.html"],
+			options: {
+				puppeteer: {
+					headless: true,
+					args: ['--no-sandbox', '--disable-setuid-sandbox'] // Needed on some Linux distros. Can safely be removed for Windows/macOS.
+				}
+			}
 		},
 		jshint: {
 			files: ["src/**/*.js", "Tests/**/*.js", "!Tests/qunit*.js"],
