@@ -1,27 +1,27 @@
 /*global ko: false, module: false, test: false, raises: false, equal: false, ok: false, deepEqual: false*/
 
-(function ($, ko, undefined) {
+define(['qunit'], function(QUnit) {
 	'use strict';
 
-	module('ko.sortable Tests');
+	QUnit.module('ko.sortable Tests');
 
-	test('defaults to basic sort', function() {
+	QUnit.test('defaults to basic sort', function(assert) {
 		var source = ko.observableArray([2,3,1]);
 		var sorted = source.extend({ sortable: true });
 
-		deepEqual(sorted(), [1,2,3], 'Should have been sorted by default');
+		assert.deepEqual(sorted(), [1,2,3], 'Should have been sorted by default');
 	});
 
-	test('sorted list updates when parent list changes', function() {
+	QUnit.test('sorted list updates when parent list changes', function(assert) {
 		var source = ko.observableArray([2,3,1]);
 		var sorted = source.extend({ sortable: true });
 
 		source.push(-3);
 
-		deepEqual(sorted(), [-3,1,2,3], 'Should have been updated');
+		assert.deepEqual(sorted(), [-3,1,2,3], 'Should have been updated');
 	});
 
-	test('can sort by property name', function() {
+	QUnit.test('can sort by property name', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4 },
 			{ id: 1 },
@@ -32,18 +32,18 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			1, 2, 4
 		], 'should have sorted by id');
 
 		source.push({ id: 3 });
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			1, 2, 3, 4
 		], 'should have sorted by id');
 	});
 
-	test('sorts null string keys to top', function() {
+	QUnit.test('sorts null string keys to top', function(assert) {
 		var source = ko.observableArray([
 			{ id: 'a' },
 			{ id: null },
@@ -55,12 +55,12 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			null, null, 'a', 'b'
 		], 'should have sorted null values to the top');
 	});
 
-	test('sort key is exposed and can be updated', function() {
+	QUnit.test('sort key is exposed and can be updated', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4, name: 'C' },
 			{ id: 1, name: 'B' },
@@ -71,16 +71,16 @@
 			}
 		});
 
-		equal(source.sortKey(), 'id', 'The sort key should be exposed');
+		assert.equal(source.sortKey(), 'id', 'The sort key should be exposed');
 
 		source.sortKey('name');
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4
 		], 'should have sorted by name');
 	});
 
-	test('can sort by property path', function() {
+	QUnit.test('can sort by property path', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4, nested: { id: 3 } },
 			{ id: 1, nested: { id: 2 } },
@@ -91,18 +91,18 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4
 		], 'should have sorted by the nested id');
 
 		source.push({ id: 3, nested: { id: 5 } });
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4, 3
 		], 'should have sorted by the nested id');
 	});
 
-	test('can sort by observable properties', function() {
+	QUnit.test('can sort by observable properties', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4, nested: ko.observable({ id: ko.observable(3) }) },
 			{ id: 1, nested: ko.observable({ id: ko.observable(2) }) },
@@ -113,18 +113,18 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4
 		], 'should have sorted by the nested id');
 
 		source.push({ id: 3, nested: { id: 5 } });
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4, 3
 		], 'should have sorted by the nested id');
 	});
 
-	test('updates sort when observable properties change', function() {
+	QUnit.test('updates sort when observable properties change', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4, property: ko.observable(4) },
 			{ id: 1, property: ko.observable(1) },
@@ -135,18 +135,18 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			1, 2, 4
 		], 'should have sorted by the property');
 
 		source()[2].property(-1);
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			4, 1, 2
 		], 'sort should have been updated');
 	});
 
-	test('can sort on observable array lengths', function() {
+	QUnit.test('can sort on observable array lengths', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4, property: ko.observableArray([1,1,1,1]) },
 			{ id: 1, property: ko.observableArray([1]) },
@@ -157,12 +157,12 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			1, 2, 4
 		], 'should have sorted by the property');
 	});
 
-	test('sortDescending is exposed and can be changed', function() {
+	QUnit.test('sortDescending is exposed and can be changed', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4 },
 			{ id: 1 },
@@ -174,21 +174,21 @@
 			}
 		});
 
-		equal(source.sortKey(), 'id', 'The sort key should be exposed');
-		ok(source.sortDescending(), 'Descending should have been taken from the options');
+		assert.equal(source.sortKey(), 'id', 'The sort key should be exposed');
+		assert.ok(source.sortDescending(), 'Descending should have been taken from the options');
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			4, 2, 1
 		], 'should have sorted in reverse order');
 
 		source.sortDescending(false);
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			1, 2, 4
 		], 'should have sorted in order');
 	});
 
-	test('null items are sorted to the top', function() {
+	QUnit.test('null items are sorted to the top', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4 },
 			{ id: 1 },
@@ -201,16 +201,16 @@
 			}
 		});
 
-		equal(source()[0], null, 'null items should appear at the top');
-		equal(source()[1], null, 'null items should appear at the top');
+		assert.equal(source()[0], null, 'null items should appear at the top');
+		assert.equal(source()[1], null, 'null items should appear at the top');
 
 		source.sortDescending(true);
 
-		equal(source()[3], null, 'null items should appear at the end');
-		equal(source()[4], null, 'null items should appear at the end');
+		assert.equal(source()[3], null, 'null items should appear at the end');
+		assert.equal(source()[4], null, 'null items should appear at the end');
 	});
 
-	test('setSortKey sets the sort key and reverses if it matches', function() {
+	QUnit.test('setSortKey sets the sort key and reverses if it matches', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4, name: 'C' },
 			{ id: 1, name: 'B' },
@@ -218,31 +218,31 @@
 		]).extend({ sortable: true });
 
 		source.setSortKey('id');
-		equal(source.sortKey(), 'id', 'The sortKey should have been set');
-		ok(!source.sortDescending(), 'Descending should be false');
+		assert.equal(source.sortKey(), 'id', 'The sortKey should have been set');
+		assert.ok(!source.sortDescending(), 'Descending should be false');
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			1, 2, 4
 		], 'should have sorted by the specified sort key');
 
 		source.setSortKey('id');
-		equal(source.sortKey(), 'id', 'The sortKey should have been set');
-		ok(source.sortDescending(), 'Descending should be true');
+		assert.equal(source.sortKey(), 'id', 'The sortKey should have been set');
+		assert.ok(source.sortDescending(), 'Descending should be true');
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			4, 2, 1
 		], 'should have sorted by the specified sort key');
 
 		source.setSortKey('name');
-		equal(source.sortKey(), 'name', 'The sortKey should have been set');
-		ok(!source.sortDescending(), 'Descending should be false again as the key has changed');
+		assert.equal(source.sortKey(), 'name', 'The sortKey should have been set');
+		assert.ok(!source.sortDescending(), 'Descending should be false again as the key has changed');
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			2, 1, 4
 		], 'should have sorted by the specified sort key');
 	});
 	
-	test('can sort on strings', function() {
+	QUnit.test('can sort on strings', function(assert) {
 		var source = ko.observableArray([
 			'aa',
 			'ba',
@@ -251,7 +251,7 @@
 			'a'
 		]).extend({ sortable: true });
 
-		deepEqual(source(), [
+		assert.deepEqual(source(), [
 			'a',
 			'aa',
 			'ab',
@@ -260,7 +260,7 @@
 		], 'Strings should be sorted correctly');
 	});
 
-	test('can sort on strings ignoring case', function () {
+	QUnit.test('can sort on strings ignoring case', function (assert) {
 		var source = ko.observableArray([
 			'AA',
 			'ba',
@@ -269,7 +269,7 @@
 			'a'
 		]).extend({ sortable: true });
 
-		deepEqual(source(), [
+		assert.deepEqual(source(), [
 			'a',
 			'AA',
 			'AB',
@@ -278,43 +278,61 @@
 		], 'Strings should be sorted correctly');
 	});
 
-	test('can sort on strings with locale', function () {
+	QUnit.test('can sort on strings with locale', function (assert) {
 		var source = ko.observableArray([
-			'å',
-			'AA',
-			'æ',
+			'Ã¥',
+			'a',
+			'Ã¦',
 			'ba',
-			'ø'
-		]).extend({ sortable: { locale: 'no' } });
+			'Ã¸'
+		]).extend({ sortable: { locale: 'nb' } });
 
-		deepEqual(source(), [
-			'AA',
+		assert.deepEqual(source(), [
+			'a',
 			'ba',
-			'æ',
-			'ø',
-			'å'
+			'Ã¦',
+			'Ã¸',
+			'Ã¥'
 		], 'Strings should be sorted correctly');
 	});
 
-	test('can sort on strings with locale ignoring case', function () {
+	QUnit.test('can sort on strings with locale descending', function (assert) {
 		var source = ko.observableArray([
+			'Ã¥',
+			'Ã¦',
 			'a',
-			'Ø',
-			'æ',
-			'å',
-			'AA'
-		]).extend({ sortable: { locale: 'no' } });
+			'Ã¸y',
+			'ad'
+		]).extend({ sortable: { locale: 'nb', descending: true } });
 
-		deepEqual(source(), [
-			'a',
-			'AA',
-			'æ',
-			'Ø',
-			'å'
+		assert.deepEqual(source(), [
+			'Ã¥',
+			'Ã¸y',
+			'Ã¦',
+			'ad',
+			'a'
 		], 'Strings should be sorted correctly');
 	});
 
-	test('treats null nested properties as null', function() {
+	QUnit.test('can sort on strings with locale ignoring case', function (assert) {
+		var source = ko.observableArray([
+			'a',
+			'Ã˜',
+			'Ã¦',
+			'Ã¥',
+			'A'
+		]).extend({ sortable: { locale: 'nb' } });
+
+		assert.deepEqual(source(), [
+			'a',
+			'A',
+			'Ã¦',
+			'Ã˜',
+			'Ã¥'
+		], 'Strings should be sorted correctly');
+	});
+
+	QUnit.test('treats null nested properties as null', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4 },
 			{ id: 1, nested: { name: '..' } },
@@ -326,22 +344,22 @@
 			}
 		});
 
-		deepEqual(source().map(function(s) { return s.id; }), [
+		assert.deepEqual(source().map(function(s) { return s.id; }), [
 			4, 3, 2, 1
 		], 'should have sorted by the nested id');
 	});
 
-	test('undefined values are sorted to the bottom', function () {
+	QUnit.test('undefined values are sorted to the bottom', function (assert) {
 		var source = ko.observableArray([, '4', '1', '5', , '7', '3']).extend({ sortable: true });
 
-		deepEqual(source(), ['1', '3', '4', '5', '7', undefined, undefined]);
+		assert.deepEqual(source(), ['1', '3', '4', '5', '7', undefined, undefined]);
 
 		source.sortDescending(true);
 
-		deepEqual(source(), ['7', '5', '4', '3', '1', undefined, undefined]);
+		assert.deepEqual(source(), ['7', '5', '4', '3', '1', undefined, undefined]);
 	});
 
-	test('null nested values are sorted to the bottom when sortNullsToBottom is specified', function () {
+	QUnit.test('null nested values are sorted to the bottom when sortNullsToBottom is specified', function (assert) {
 		var source = ko.observableArray([
 		{ id: 3, nested: { name: 'bcd' } },
 		{ id: 1, nested: { name: 'abc' } },
@@ -350,14 +368,14 @@
 		{ id: 5, nested: { name: '123' } }
 		]).extend({ sortable: { key: 'nested.name', sortNullsToBottom: true }  });
 
-		deepEqual(source().map(function(s) { return s.id; }), [5, 1, 3, 6, 2]);
+		assert.deepEqual(source().map(function(s) { return s.id; }), [5, 1, 3, 6, 2]);
         
 		source.sortDescending(true);
 
-		deepEqual(source().map(function(s) { return s.id; }), [3, 1, 5, 6, 2]);
+		assert.deepEqual(source().map(function(s) { return s.id; }), [3, 1, 5, 6, 2]);
 	});
 
-	test('can sort by multiple keys', function () {
+	QUnit.test('can sort by multiple keys', function (assert) {
 		var source = ko.observableArray([
 			{ id: 4, nested: { value: 1 } },
 			{ id: 3, nested: { name: 'bcd' } },
@@ -367,14 +385,14 @@
 			{ id: 2, nested: { name: 'abc' } }
 		]).extend({ sortable: { key: 'nested.name, nested.value' } });
 
-		deepEqual(source().map(function (s) { return s.id; }), [6, 4, 2, 5, 1, 3]);
+		assert.deepEqual(source().map(function (s) { return s.id; }), [6, 4, 2, 5, 1, 3]);
 
 		source.sortDescending(true);
 
-		deepEqual(source().map(function (s) { return s.id; }), [3, 1, 5, 2, 4, 6]);
+		assert.deepEqual(source().map(function (s) { return s.id; }), [3, 1, 5, 2, 4, 6]);
 	});
 
-	test('can sort by multiple keys with nulls at bottom', function () {
+	QUnit.test('can sort by multiple keys with nulls at bottom', function (assert) {
 		var source = ko.observableArray([
 			{ id: 4, nested: { value: 1 } },
 			{ id: 3, nested: { name: 'bcd' } },
@@ -384,11 +402,11 @@
 			{ id: 2, nested: { name: 'abc' } }
 		]).extend({ sortable: { key: 'nested.name, nested.value', sortNullsToBottom: true } });
 
-		deepEqual(source().map(function (s) { return s.id; }), [5, 1, 2, 3, 4, 6]);
+		assert.deepEqual(source().map(function (s) { return s.id; }), [5, 1, 2, 3, 4, 6]);
 
 		source.sortDescending(true);
 
-		deepEqual(source().map(function (s) { return s.id; }), [3, 1, 5, 2, 4, 6]);
+		assert.deepEqual(source().map(function (s) { return s.id; }), [3, 1, 5, 2, 4, 6]);
 	});
 
-}(jQuery, ko));
+});
