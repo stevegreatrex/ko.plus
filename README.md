@@ -323,6 +323,9 @@ Spaces between items are automatically trimmed.
 #### descending
 Determines whether or not the sorting should be reversed
 
+#### locale
+Sort using the specificed locale. A string with a BCP 47 language tag.
+
 ### Properties and Functions
 
 #### sortKey

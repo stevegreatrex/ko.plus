@@ -8,6 +8,11 @@
 			options = {};
 		}
 
+		var localeCollator;
+		if(options && options.locale){
+			localeCollator = new Intl.Collator(options.locale, { sensitivity: 'base' });
+		}
+
 		var subscriptions = [];
 
 		function unwrapPath(object, path) {
@@ -45,6 +50,8 @@
 
 			if (typeof aValue === 'string') { aValue = aValue.toLowerCase(); }
 			if (typeof bValue === 'string') { bValue = bValue.toLowerCase(); }
+
+			if (localeCollator && typeof aValue === 'string' && typeof bValue === 'string') { return descending ? localeCollator.compare(bValue, aValue) : localeCollator.compare(aValue, bValue); }
 
 			if (aValue < bValue) { return descending ? 1 : -1; }
 			if (aValue > bValue) { return descending ? -1 : 1; }

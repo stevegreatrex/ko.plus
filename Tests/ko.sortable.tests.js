@@ -278,6 +278,60 @@ define(['qunit'], function(QUnit) {
 		], 'Strings should be sorted correctly');
 	});
 
+	QUnit.test('can sort on strings with locale', function (assert) {
+		var source = ko.observableArray([
+			'å',
+			'a',
+			'æ',
+			'ba',
+			'ø'
+		]).extend({ sortable: { locale: 'nb' } });
+
+		assert.deepEqual(source(), [
+			'a',
+			'ba',
+			'æ',
+			'ø',
+			'å'
+		], 'Strings should be sorted correctly');
+	});
+
+	QUnit.test('can sort on strings with locale descending', function (assert) {
+		var source = ko.observableArray([
+			'å',
+			'æ',
+			'a',
+			'øy',
+			'ad'
+		]).extend({ sortable: { locale: 'nb', descending: true } });
+
+		assert.deepEqual(source(), [
+			'å',
+			'øy',
+			'æ',
+			'ad',
+			'a'
+		], 'Strings should be sorted correctly');
+	});
+
+	QUnit.test('can sort on strings with locale ignoring case', function (assert) {
+		var source = ko.observableArray([
+			'a',
+			'Ø',
+			'æ',
+			'å',
+			'A'
+		]).extend({ sortable: { locale: 'nb' } });
+
+		assert.deepEqual(source(), [
+			'a',
+			'A',
+			'æ',
+			'Ø',
+			'å'
+		], 'Strings should be sorted correctly');
+	});
+
 	QUnit.test('treats null nested properties as null', function(assert) {
 		var source = ko.observableArray([
 			{ id: 4 },
